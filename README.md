@@ -9,6 +9,7 @@ The goal of this repo is to implement the same DL models in two frameworks:
 The models are implemented from papers with pretrained weights
 
 I have no idea what I am doing
+
 tinymodels is just for learning how models actually works
 
 # Architectures
