@@ -78,12 +78,12 @@ img = Image.open(BytesIO(response.content))
 img_t = transform(img)
 batch_t = torch.unsqueeze(img_t, 0)
 out = model(batch_t)
-print(model)
+print('Out: ', out)
 
 labels = requests.get('https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt').text.split('\n')
 
 _, index = torch.max(out, 1)
-print(index)
+print('index: ', index)
 percentage = torch.nn.functional.softmax(out, dim=1)[0] * 100
- 
+print('percentage: ', percentage)
 print(labels[index[0]], percentage[index[0]].item())

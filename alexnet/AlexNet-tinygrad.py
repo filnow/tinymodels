@@ -1,48 +1,25 @@
 from tinygrad.tensor import Tensor 
-import tinygrad.nn as nn
-from torch.hub import load_state_dict_from_url
 import torch
+from torch.hub import load_state_dict_from_url
 from PIL import Image
 from torchvision import transforms
 import requests
 from io import BytesIO
-
-
-class MaxPool2d:
-  def __init__(self, kernel_size, stride):
-    if isinstance(kernel_size, int): self.kernel_size = (kernel_size, kernel_size)
-    else: self.kernel_size = kernel_size
-    self.stride = stride if (stride is not None) else kernel_size
-  
-  def __repr__(self):
-    return f"MaxPool2d(kernel_size={self.kernel_size!r}, stride={self.stride!r})"
-  
-  def __call__(self, input):
-    
-    return input.max_pool2d(kernel_size=self.kernel_size)
-
-#NOTE See if model is matching pytorch model on simple example
 
 class AlexNet():
 
     def __init__(self):
         
         self.conv0 = (Tensor.glorot_uniform(64, 3, 11, 11), Tensor.zeros(64))
-
         self.conv3 = (Tensor.glorot_uniform(192, 64, 5, 5), Tensor.zeros(192))
-
         self.conv6 = (Tensor.glorot_uniform(384, 192, 3, 3), Tensor.zeros(384))
-
         self.conv8 = (Tensor.glorot_uniform(256, 384, 3, 3), Tensor.zeros(256))
-
         self.conv10 = (Tensor.glorot_uniform(256, 256, 3, 3), Tensor.zeros(256))
 
         self.ll1 = (Tensor.uniform(4096, 9216), Tensor.zeros(4096))
         self.ll4 = (Tensor.uniform(4096, 4096), Tensor.zeros(4096))
         self.ll6 = (Tensor.uniform(1000, 4096), Tensor.zeros(1000))
         
-        self.maxpool = MaxPool2d(3,2)
-    
     def forward(self, x: Tensor) -> Tensor:
          
         x = x.conv2d(*self.conv0, padding=2, stride=4).relu().max_pool2d()
@@ -52,7 +29,8 @@ class AlexNet():
         x = x.conv2d(*self.conv10, padding=1).relu().max_pool2d()
         
         x = x.avg_pool2d((1,1))
-        x = Tensor.flatten(x, 1)
+        
+        x = x.flatten(1)
         x = x.dropout(0.5)
         x = x.linear(self.ll1[0].transpose(), self.ll1[1]).relu()
         x = x.dropout(0.5)
@@ -104,11 +82,10 @@ img = Image.open(BytesIO(response.content))
 img_t = transform(img)
 batch_t = torch.unsqueeze(img_t, 0)
 out = m.forward(Tensor(batch_t.detach().numpy()))
-
 labels = requests.get('https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt').text.split('\n')
-
-index = int(Tensor.max(out, 1).numpy())
-
-percentage = Tensor.softmax(out)[0] * 100
-percentage = percentage.numpy()
-print(labels[index], percentage[index].item())
+#index = int(Tensor.max(out).numpy())
+_, index = torch.max(torch.tensor(out.numpy()), 1)
+#percentage = out.softmax()[0] * 100
+#percentage = torch.nn.functional.softmax(torch.tensor(out.numpy()), dim=1)[0] * 100
+percentage = out.softmax()[0]*100
+print(labels[index[0]], percentage[index[0]].item())
