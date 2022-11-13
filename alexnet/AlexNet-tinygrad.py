@@ -88,7 +88,7 @@ transform= transforms.Compose([
  )])
 
 #'https://raw.githubusercontent.com/srirammanikumar/DogBreedClassifier/master/images/Labrador_retriever_06457.jpg'
-response = requests.get('https://raw.githubusercontent.com/srirammanikumar/DogBreedClassifier/master/images/Labrador_retriever_06457.jpg')
+response = requests.get('https://raw.githubusercontent.com/filnow/tinymodels/main/data/dog3.jpg')
 img = Image.open(BytesIO(response.content))
 img_t = transform(img)
 batch_t = torch.unsqueeze(img_t, 0)
