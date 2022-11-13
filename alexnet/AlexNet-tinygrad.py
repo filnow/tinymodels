@@ -5,7 +5,7 @@ from PIL import Image
 from torchvision import transforms
 import requests
 from io import BytesIO
-
+from extra.utils import get_parameters
 class AlexNet():
 
     def __init__(self):
@@ -19,22 +19,33 @@ class AlexNet():
         self.ll1 = (Tensor.uniform(4096, 9216), Tensor.zeros(4096))
         self.ll4 = (Tensor.uniform(4096, 4096), Tensor.zeros(4096))
         self.ll6 = (Tensor.uniform(1000, 4096), Tensor.zeros(1000))
-        
+    
+    #NOTE should use relu not leakyrelu
     def forward(self, x: Tensor) -> Tensor:
          
-        x = x.conv2d(*self.conv0, padding=2, stride=4).relu().max_pool2d()
-        x = x.conv2d(*self.conv3, padding=2).relu().max_pool2d()
-        x = x.conv2d(*self.conv6, padding=1).relu()
-        x = x.conv2d(*self.conv8, padding=1).relu()
-        x = x.conv2d(*self.conv10, padding=1).relu().max_pool2d()
+        x = x.conv2d(*self.conv0, padding=2, stride=4)
+        x = x.leakyrelu()
+        x = x.max_pool2d()
+        x = x.conv2d(*self.conv3, padding=2)
+        x = x.leakyrelu()
+        x = x.max_pool2d()
+        x = x.conv2d(*self.conv6, padding=1)
+        x = x.leakyrelu()
+        x = x.conv2d(*self.conv8, padding=1)
+        x = x.leakyrelu()
+        x = x.conv2d(*self.conv10, padding=1)
+        x = x.leakyrelu()
+        x = x.max_pool2d()
         
-        x = x.avg_pool2d((1,1))
-        
+        x = x.avg_pool2d(kernel_size=(1,1))
+ 
         x = x.flatten(1)
         x = x.dropout(0.5)
-        x = x.linear(self.ll1[0].transpose(), self.ll1[1]).relu()
+        x = x.linear(self.ll1[0].transpose(), self.ll1[1])
+        x = x.leakyrelu()
         x = x.dropout(0.5)
-        x = x.linear(*self.ll4).relu()
+        x = x.linear(*self.ll4)
+        x = x.leakyrelu()
         x = x.linear(self.ll6[0].transpose(), self.ll6[1])
 
         return x
@@ -61,9 +72,9 @@ class AlexNet():
       m.ll6[0].assign(dat['classifier.6.weight'].detach().numpy())
       m.ll6[1].assign(dat['classifier.6.bias'].detach().numpy())
 
-
 m = AlexNet()
 m.fake_load()
+
 
 transform= transforms.Compose([            
  
@@ -86,6 +97,6 @@ labels = requests.get('https://raw.githubusercontent.com/pytorch/hub/master/imag
 #index = int(Tensor.max(out).numpy())
 _, index = torch.max(torch.tensor(out.numpy()), 1)
 #percentage = out.softmax()[0] * 100
-#percentage = torch.nn.functional.softmax(torch.tensor(out.numpy()), dim=1)[0] * 100
-percentage = out.softmax()[0]*100
+percentage = torch.nn.functional.softmax(torch.tensor(out.numpy()), dim=1)[0] * 100
+
 print(labels[index[0]], percentage[index[0]].item())

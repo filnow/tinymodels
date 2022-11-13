@@ -1,8 +1,10 @@
-from tinygrad.nn import nn
-from tinygrad.tensor import Tensor 
 
 
 
+
+
+x = ([1,2,3], [3,2,4])
+print(*x[0])
 
 
 
