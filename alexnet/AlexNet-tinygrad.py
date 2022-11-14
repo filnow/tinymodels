@@ -23,29 +23,21 @@ class AlexNet():
     #NOTE should use relu not leakyrelu
     def forward(self, x: Tensor) -> Tensor:
          
-        x = x.conv2d(*self.conv0, padding=2, stride=4)
-        x = x.leakyrelu()
-        x = x.max_pool2d()
-        x = x.conv2d(*self.conv3, padding=2)
-        x = x.leakyrelu()
-        x = x.max_pool2d()
-        x = x.conv2d(*self.conv6, padding=1)
-        x = x.leakyrelu()
-        x = x.conv2d(*self.conv8, padding=1)
-        x = x.leakyrelu()
-        x = x.conv2d(*self.conv10, padding=1)
-        x = x.leakyrelu()
-        x = x.max_pool2d()
+        x = x.conv2d(*self.conv0, padding=2, stride=4).relu().max_pool2d()
+        x = x.conv2d(*self.conv3, padding=2).relu().max_pool2d()
+        x = x.conv2d(*self.conv6, padding=1).relu()
+        x = x.conv2d(*self.conv8, padding=1).relu()
+        x = x.conv2d(*self.conv10, padding=1).relu().max_pool2d()
         
         x = x.avg_pool2d(kernel_size=(1,1))
  
         x = x.flatten(1)
         x = x.dropout(0.5)
-        x = x.linear(self.ll1[0].transpose(), self.ll1[1])
-        x = x.leakyrelu()
+        
+        x = x.linear(self.ll1[0].transpose(), self.ll1[1]).relu()
         x = x.dropout(0.5)
-        x = x.linear(*self.ll4)
-        x = x.leakyrelu()
+        
+        x = x.linear(*self.ll4).relu()
         x = x.linear(self.ll6[0].transpose(), self.ll6[1])
 
         return x
