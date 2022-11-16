@@ -1,5 +1,3 @@
-#https://download.pytorch.org/models/vgg16_bn-6c64b313.pth
-#https://arxiv.org/pdf/1409.1556.pdf
 import torch
 import torch.nn as nn
 from PIL import Image
@@ -8,7 +6,6 @@ from torch.hub import load_state_dict_from_url
 import requests
 from io import BytesIO
 import sys
-
 
 class VGG19(nn.Module):
 
