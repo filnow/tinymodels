@@ -1,25 +1,9 @@
 from tinygrad.tensor import Tensor 
-import torch
 from torch.hub import load_state_dict_from_url
 from PIL import Image
-from torchvision import transforms
 import requests
 from io import BytesIO
-from extra.utils import get_parameters, get_child, fake_torch_load, fetch
 import numpy as np
-
-class MaxPool2d:
-  def __init__(self, kernel_size, stride):
-    if isinstance(kernel_size, int): self.kernel_size = (kernel_size, kernel_size)
-    else: self.kernel_size = kernel_size
-    self.stride = stride if (stride is not None) else kernel_size
-  
-  def __repr__(self):
-    return f"MaxPool2d(kernel_size={self.kernel_size!r}, stride={self.stride!r})"
-  
-  def __call__(self, input):
-    # TODO: Implement strided max_pool2d, and maxpool2d for 3d inputs
-    return input.max_pool2d(kernel_size=self.kernel_size)
 
 class VGG19():
 
@@ -31,11 +15,9 @@ class VGG19():
         self.features_weight = {}
         self.classifier_weight = {}
         
-
         self.features_bias = {}
         self.classifier_bias = {}
-                
-        
+               
     def forward(self, x: Tensor) -> Tensor:
         
         for i in range(16):
@@ -44,15 +26,17 @@ class VGG19():
             else:
                 x = x.conv2d(*self.features[i], padding=1).relu()
         
-        #x = x.avg_pool2d(kernel_size=(1,1))
- 
-        x = x.flatten(1)
-        x = x.dropout(0.5)
+        x = x.avg_pool2d(kernel_size=(1,1))
         
+        x = x.flatten(1)
+        #x = x.reshape(shape=(-1, x.shape[1]))
+        #NOTE change shapes idk
         x = x.linear(self.classifier[0][0].transpose(), self.classifier[0][1]).relu()
         x = x.dropout(0.5)
         
         x = x.linear(*self.classifier[1]).relu()
+        x = x.dropout(0.5)
+
         x = x.linear(self.classifier[2][0].transpose(), self.classifier[2][1])
 
         return x.softmax()
@@ -62,22 +46,20 @@ class VGG19():
         data = load_state_dict_from_url('https://download.pytorch.org/models/vgg19-dcbb9e9d.pth', progress=True)
 
         for k,v in data.items():
-            
+ 
             if 'features' in k:    
                 if 'weight' in k:
-                    self.features_weight[k] = Tensor.uniform(*v.detach().numpy().shape).assign(v.detach().numpy())
+                    self.features_weight[k] = Tensor.glorot_uniform(*v.detach().numpy().shape).assign(v.detach().numpy())
                 else:
                     self.features_bias[k] = Tensor.zeros(*v.detach().numpy().shape).assign(v.detach().numpy())
             else:  
                 if 'weight' in k:
-                    self.classifier_weight[k] = Tensor.uniform(*v.detach().numpy().shape).assign(v.detach().numpy())
+                    self.classifier_weight[k] = Tensor.glorot_uniform(*v.detach().numpy().shape).assign(v.detach().numpy())
                 else:
                     self.classifier_bias[k] = Tensor.zeros(*v.detach().numpy().shape).assign(v.detach().numpy())
 
         self.features = tuple(zip(self.features_weight.values(), self.features_bias.values()))
         self.classifier = tuple(zip(self.classifier_weight.values(), self.classifier_bias.values()))
-
-
 
 def infer(model, img):
   # preprocess image
@@ -94,7 +76,6 @@ def infer(model, img):
   plt.imshow(img)
   plt.show()
   '''
-
   # low level preprocess
   img = np.moveaxis(img, [2,0,1], [0,1,2])
   img = img.astype(np.float32)[:3].reshape(1,3,224,224)
@@ -116,7 +97,6 @@ def infer(model, img):
 model = VGG19()
 model.fake_load()
 
-#'https://raw.githubusercontent.com/srirammanikumar/DogBreedClassifier/master/images/Labrador_retriever_06457.jpg'
 response = requests.get('https://raw.githubusercontent.com/srirammanikumar/DogBreedClassifier/master/images/Labrador_retriever_06457.jpg')
 labels = requests.get('https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt').text.split('\n')
 
