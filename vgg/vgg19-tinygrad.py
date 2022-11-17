@@ -6,6 +6,20 @@ from torchvision import transforms
 import requests
 from io import BytesIO
 from extra.utils import get_parameters, get_child, fake_torch_load, fetch
+import numpy as np
+
+class MaxPool2d:
+  def __init__(self, kernel_size, stride):
+    if isinstance(kernel_size, int): self.kernel_size = (kernel_size, kernel_size)
+    else: self.kernel_size = kernel_size
+    self.stride = stride if (stride is not None) else kernel_size
+  
+  def __repr__(self):
+    return f"MaxPool2d(kernel_size={self.kernel_size!r}, stride={self.stride!r})"
+  
+  def __call__(self, input):
+    # TODO: Implement strided max_pool2d, and maxpool2d for 3d inputs
+    return input.max_pool2d(kernel_size=self.kernel_size)
 
 class VGG19():
 
@@ -26,7 +40,7 @@ class VGG19():
         
         for i in range(16):
             if i in [1,3,7,11,15]:
-                x = x.conv2d(*self.features[i], padding=1).relu().max_pool2d
+                x = x.conv2d(*self.features[i], padding=1).relu().max_pool2d(kernel_size=(2,2))
             else:
                 x = x.conv2d(*self.features[i], padding=1).relu()
         
@@ -41,7 +55,7 @@ class VGG19():
         x = x.linear(*self.classifier[1]).relu()
         x = x.linear(self.classifier[2][0].transpose(), self.classifier[2][1])
 
-        return x
+        return x.softmax()
       
     def fake_load(self):
 
@@ -63,33 +77,49 @@ class VGG19():
         self.features = tuple(zip(self.features_weight.values(), self.features_bias.values()))
         self.classifier = tuple(zip(self.classifier_weight.values(), self.classifier_bias.values()))
 
-m = VGG19()
-m.fake_load()
 
-#'https://download.pytorch.org/models/vgg19-dcbb9e9d.pth'
 
-transform= transforms.Compose([            
- 
- transforms.Resize(256),                    
- transforms.CenterCrop(224),                
- transforms.ToTensor(),                     
- transforms.Normalize(                      
- mean=[0.485, 0.456, 0.406],                
- std=[0.229, 0.224, 0.225]                  
- 
- )])
+def infer(model, img):
+  # preprocess image
+  aspect_ratio = img.size[0] / img.size[1]
+  img = img.resize((int(224*max(aspect_ratio,1.0)), int(224*max(1.0/aspect_ratio,1.0))))
+
+  img = np.array(img)
+  y0,x0=(np.asarray(img.shape)[:2]-224)//2
+  retimg = img = img[y0:y0+224, x0:x0+224]
+
+  # if you want to look at the image
+  '''
+  import matplotlib.pyplot as plt
+  plt.imshow(img)
+  plt.show()
+  '''
+
+  # low level preprocess
+  img = np.moveaxis(img, [2,0,1], [0,1,2])
+  img = img.astype(np.float32)[:3].reshape(1,3,224,224)
+  img /= 255.0
+  img -= np.array([0.485, 0.456, 0.406]).reshape((1,-1,1,1))
+  img /= np.array([0.229, 0.224, 0.225]).reshape((1,-1,1,1))
+
+  # run the net
+  out = model.forward(Tensor(img)).cpu()
+
+  # if you want to look at the outputs
+  '''
+  import matplotlib.pyplot as plt
+  plt.plot(out.data[0])
+  plt.show()
+  '''
+  return out, retimg
+
+model = VGG19()
+model.fake_load()
 
 #'https://raw.githubusercontent.com/srirammanikumar/DogBreedClassifier/master/images/Labrador_retriever_06457.jpg'
-response = requests.get('https://raw.githubusercontent.com/filnow/tinymodels/main/data/dog3.jpg')
-img = Image.open(BytesIO(response.content))
-img_t = transform(img)
-batch_t = torch.unsqueeze(img_t, 0)
-out = m.forward(Tensor(batch_t.detach().numpy()))
+response = requests.get('https://raw.githubusercontent.com/srirammanikumar/DogBreedClassifier/master/images/Labrador_retriever_06457.jpg')
 labels = requests.get('https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt').text.split('\n')
-#index = int(Tensor.max(out).numpy())
-_, index = torch.max(torch.tensor(out.numpy()), 1)
-#percentage = out.softmax()[0] * 100
-percentage = torch.nn.functional.softmax(torch.tensor(out.numpy()), dim=1)[0] * 100
 
-print(labels[index[0]], percentage[index[0]].item())
-
+img = Image.open(BytesIO(response.content))
+out, _ = infer(model, img)
+print(np.argmax(out.data), np.max(out.data)*100, labels[np.argmax(out.data)])
