@@ -13,12 +13,6 @@ class VGG19():
 			
 			self.features = {}
 			self.classifier = {}
-
-			self.features_weight = {}
-			self.classifier_weight = {}
-			
-			self.features_bias = {}
-			self.classifier_bias = {}
 							
 	def forward(self, x: Tensor) -> Tensor:
 			
@@ -42,18 +36,24 @@ class VGG19():
 
 		data = load_state_dict_from_url('https://download.pytorch.org/models/vgg19-dcbb9e9d.pth', progress=True)
 
+		features_weight = {}
+		classifier_weight = {}
+		
+		features_bias = {}
+		classifier_bias = {}
+
 		for k,v in data.items():
 
 			if 'features' in k:    
 				if 'weight' in k:
-					self.features_weight[k] = Tensor.glorot_uniform(*v.detach().numpy().shape).assign(v.detach().numpy())
+					features_weight[k] = Tensor.glorot_uniform(*v.detach().numpy().shape).assign(v.detach().numpy())
 				else:
-					self.features_bias[k] = Tensor.zeros(*v.detach().numpy().shape).assign(v.detach().numpy())
+					features_bias[k] = Tensor.zeros(*v.detach().numpy().shape).assign(v.detach().numpy())
 			else:  
 				if 'weight' in k:
-					self.classifier_weight[k] = Tensor.glorot_uniform(*v.detach().numpy().T.shape).assign(v.detach().numpy().T)
+					classifier_weight[k] = Tensor.glorot_uniform(*v.detach().numpy().T.shape).assign(v.detach().numpy().T)
 				else:
-					self.classifier_bias[k] = Tensor.zeros(*v.detach().numpy().shape).assign(v.detach().numpy())
+					classifier_bias[k] = Tensor.zeros(*v.detach().numpy().shape).assign(v.detach().numpy())
 
 		self.features = tuple(zip(self.features_weight.values(), self.features_bias.values()))
 		self.classifier = tuple(zip(self.classifier_weight.values(), self.classifier_bias.values()))
