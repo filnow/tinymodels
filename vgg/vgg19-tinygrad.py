@@ -34,7 +34,7 @@ class VGG19():
         x = x.linear(self.classifier[0][0].transpose(), self.classifier[0][1]).relu()
         x = x.dropout(0.5)
         
-        x = x.linear(*self.classifier[1]).relu()
+        x = x.linear(self.classifier[1][0].transpose(), self.classifier[1][1]).relu()
         x = x.dropout(0.5)
 
         x = x.linear(self.classifier[2][0].transpose(), self.classifier[2][1])

@@ -37,7 +37,7 @@ class AlexNet():
         x = x.linear(self.ll1[0].transpose(), self.ll1[1]).relu()
         x = x.dropout(0.5)
         
-        x = x.linear(*self.ll4).relu()
+        x = x.linear(self.ll4[0].transpose(), self.ll4[1]).relu()
         x = x.linear(self.ll6[0].transpose(), self.ll6[1])
 
         return x
