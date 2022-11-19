@@ -11,24 +11,21 @@ class VGG19():
 
 	def __init__(self):
 			
-			self.features = {}
-			self.classifier = {}
+			self.wb = []
 							
 	def forward(self, x: Tensor) -> Tensor:
 			
 			for i in range(16):
 				if i in [1,3,7,11,15]:
-					x = x.conv2d(*self.features[i], padding=1).relu().max_pool2d(kernel_size=(2,2))
+					x = x.conv2d(*self.wb[i], padding=1).relu().max_pool2d(kernel_size=(2,2))
 				else:
-					x = x.conv2d(*self.features[i], padding=1).relu()
+					x = x.conv2d(*self.wb[i], padding=1).relu()
 			
-			x = x.avg_pool2d(kernel_size=(1,1))
+			x = x.avg_pool2d(kernel_size=(1,1)).flatten(1)
 			
-			x = x.flatten(1)
-
-			x = x.linear(*self.classifier[0]).relu().dropout(0.5)
-			x = x.linear(*self.classifier[1]).relu().dropout(0.5)
-			x = x.linear(*self.classifier[2])
+			x = x.linear(self.wb[16][0].transpose(), self.wb[16][1]).relu().dropout(0.5)
+			x = x.linear(self.wb[17][0].transpose(), self.wb[17][1]).relu().dropout(0.5)
+			x = x.linear(self.wb[18][0].transpose(), self.wb[18][1])
 
 			return x.softmax()
 		
@@ -36,28 +33,15 @@ class VGG19():
 
 		data = load_state_dict_from_url('https://download.pytorch.org/models/vgg19-dcbb9e9d.pth', progress=True)
 
-		features_weight = {}
-		classifier_weight = {}
+		dk = list(data.keys())
 		
-		features_bias = {}
-		classifier_bias = {}
-
-		for k,v in data.items():
-
-			if 'features' in k:    
-				if 'weight' in k:
-					features_weight[k] = Tensor.glorot_uniform(*v.detach().numpy().shape).assign(v.detach().numpy())
-				else:
-					features_bias[k] = Tensor.zeros(*v.detach().numpy().shape).assign(v.detach().numpy())
-			else:  
-				if 'weight' in k:
-					classifier_weight[k] = Tensor.glorot_uniform(*v.detach().numpy().T.shape).assign(v.detach().numpy().T)
-				else:
-					classifier_bias[k] = Tensor.zeros(*v.detach().numpy().shape).assign(v.detach().numpy())
-
-		self.features = tuple(zip(self.features_weight.values(), self.features_bias.values()))
-		self.classifier = tuple(zip(self.classifier_weight.values(), self.classifier_bias.values()))
-
+		for i in range(len(dk)):
+			if i%2 == 0:
+				self.wb.append((
+					Tensor.glorot_uniform(*data[dk[i]].detach().numpy().shape).assign(data[dk[i]].detach().numpy()),
+					Tensor.zeros(*data[dk[i+1]].detach().numpy().shape).assign(data[dk[i+1]].detach().numpy())
+				))
+		
 model = VGG19()
 model.fake_load()
 
