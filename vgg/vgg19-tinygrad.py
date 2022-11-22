@@ -25,9 +25,9 @@ class VGG19():
 			
 			x = x.linear(self.wb[16][0].transpose(), self.wb[16][1]).relu().dropout(0.5)
 			x = x.linear(self.wb[17][0].transpose(), self.wb[17][1]).relu().dropout(0.5)
-			x = x.linear(self.wb[18][0].transpose(), self.wb[18][1])
+			x = x.linear(self.wb[18][0].transpose(), self.wb[18][1]).softmax()
 
-			return x.softmax()
+			return x
 		
 	def fake_load(self):
 

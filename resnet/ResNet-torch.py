@@ -8,23 +8,37 @@ from torch.hub import load_state_dict_from_url
 class AttentionBlock:
 
     def __init__(self) -> None:
-        pass
-
+        
+        #layer.1.0 and layer.1.1 are the same
+        self.layer1 = nn.Sequential(
+            nn.Conv2d(64,64,kernel_size=3, bias=False),
+            nn.BatchNorm2d(64),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(64,64,kernel_size=3, bias=False),
+            nn.BatchNorm2d(64)
+        )
+        self.layer2 = nn.Sequential(
+            nn.Conv2d(64,128,kernel_size=3,bias=False),
+            nn.BatchNorm2d(128),
+            nn.ReLU(inplace=True),
+            nn.Conv2d(128,128,kernel_size=3, bias=False),
+            nn.BatchNorm2d(128)
+        )
 
 class ResNet(nn.Module):
 
     def __init__(self):
         super().__init__()
         
-        self.features = nn.Sequential(
+        self.conv1 = nn.Sequential(
 
             nn.Conv2d(3, 64, kernel_size=7, stride=2, bias=False),
+            nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),
-            nn.MaxPool2d(kernel_size=3, stride=2),
-            nn.BatchNorm2d(64)
+            nn.MaxPool2d(kernel_size=3, stride=2)
         )
 
-        self.layer = nn.Sequential(
+        self.layers = nn.Sequential(
 
             AttentionBlock(),
             AttentionBlock(),
@@ -44,7 +58,7 @@ class ResNet(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
 
         x = self.features(x)
-        x = self.layer(x)
+        x = self.layers(x)
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
         x = self.classifier(x)
