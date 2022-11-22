@@ -19,5 +19,5 @@ tinymodels is just for learning how models actually works
 * [VGG](https://arxiv.org/pdf/1505.06798.pdf)
 
 * [ResNet](https://arxiv.org/pdf/1704.06904.pdf)
-    [ResidualUnit](https://arxiv.org/pdf/1512.03385.pdf)
-    [AttentionModule](https://arxiv.org/pdf/1603.05027.pdf)
+    - [ResidualUnit](https://arxiv.org/pdf/1512.03385.pdf)
+    - [AttentionModule](https://arxiv.org/pdf/1603.05027.pdf)
