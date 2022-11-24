@@ -5,8 +5,6 @@ from PIL import Image
 from torchvision import transforms
 from torch.hub import load_state_dict_from_url
 
-#NOTE: Just fix dict miss matching keys
-
 class Block(nn.Module):
 
     def __init__(self, in_channels, intermediate_channels, strd=1, sample=False) -> None:
@@ -24,10 +22,11 @@ class Block(nn.Module):
         
         self.relu = nn.ReLU(inplace=True)
         
-        self.downsample = nn.Sequential(
-            nn.Conv2d(in_channels, 4 * intermediate_channels,kernel_size=1,stride=strd, bias=False),
-            nn.BatchNorm2d(4 * intermediate_channels)
-        )
+        if sample:
+            self.downsample = nn.Sequential(
+                nn.Conv2d(in_channels, 4 * intermediate_channels,kernel_size=1,stride=strd, bias=False),
+                nn.BatchNorm2d(4 * intermediate_channels)
+            )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         
@@ -47,7 +46,7 @@ class ResNet(nn.Module):
         super().__init__()
         self.in_ch = 64
 
-        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, bias=False),
+        self.conv1 = nn.Conv2d(3, 64, kernel_size=7, stride=2, bias=False)
         self.bn1 = nn.BatchNorm2d(64)
         self.relu = nn.ReLU(inplace=True)
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2)
@@ -84,7 +83,7 @@ class ResNet(nn.Module):
         if stride != 1 or self.in_ch != in_channels*4:
             layers.append(Block(self.in_ch,in_channels, stride, sample=True))
         else:
-            layers.append(Block(self.in_ch, in_channels, stride, sample=False))
+            layers.append(Block(self.in_ch, in_channels, stride))
 
         self.in_ch = in_channels*4
 
@@ -95,8 +94,8 @@ class ResNet(nn.Module):
 
 data  = load_state_dict_from_url('https://download.pytorch.org/models/resnet50-0676ba61.pth')
 model = ResNet()
-print(model.eval)
-#model.load_state_dict(data)
+#print(model.eval)
+model.load_state_dict(data)
 
 #for i in data.keys():
     #print(i , data[i].detach().numpy().shape, '\n')
