@@ -58,7 +58,7 @@ model.load_state_dict(state)
 for param in model.features.parameters():
     param.requires_grad = False
 
-model.eval
+model.eval()
 
 transform = transforms.Compose([            
  

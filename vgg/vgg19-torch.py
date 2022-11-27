@@ -78,7 +78,7 @@ model = VGG19()
 data = load_state_dict_from_url("https://download.pytorch.org/models/vgg19-dcbb9e9d.pth")
 model.load_state_dict(data)
 
-model.eval
+model.eval()
 
 transform = transforms.Compose([            
  
