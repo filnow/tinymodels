@@ -35,10 +35,7 @@ class Block(nn.Module):
         ident = x.clone()
         
         x = self.relu(self.bn1(self.conv1(x)))
-        
-        print(x.shape, ident.shape)
         x = self.relu(self.bn2(self.conv2(x)))
-    
         x = self.bn3(self.conv3(x))
         
         if self.sample:
@@ -80,9 +77,9 @@ class ResNet(nn.Module):
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
-
+  
         x = torch.flatten(x, 1)
-        x = self.fc(self.dropout(x))
+        x = self.fc(x)
         return x
 
     def _make_layer(self, Block, num_Blocks, in_channels, stride):
@@ -121,5 +118,8 @@ out = model(batch_t)
 labels = requests.get('https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt').text.split('\n')
 _, index = torch.max(out, 1)
 percentage = torch.nn.functional.softmax(out, dim=1)[0] * 100
-
+#import matplotlib.pyplot as plt
+#plt.plot(percentage.detach().numpy())
+#plt.show()
+print(index[0])
 print(labels[index[0]], percentage[index[0]].item())
