@@ -22,4 +22,6 @@ tinymodels is just for learning how models actually works
     - [ResidualUnit](https://arxiv.org/pdf/1512.03385.pdf)
     - [AttentionModule](https://arxiv.org/pdf/1603.05027.pdf)
 
+* [GoogleNET](https://arxiv.org/pdf/1409.4842.pdf)
+
 * [InceptionV3](https://arxiv.org/pdf/1512.00567.pdf)
