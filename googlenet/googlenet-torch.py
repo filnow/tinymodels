@@ -46,7 +46,7 @@ class Inception(nn.Module):
         b3 = self.branch3(x.clone())
         b4 = self.branch4(x.clone())
 
-        x = b1+b2+b3+b4
+        x = torch.cat((b1,b2,b3,b4), 0)
 
         return x
 
@@ -54,7 +54,7 @@ class GoogleNET(nn.Module):
     
     def __init__(self) -> None:
         super().__init__()
-        self.conv1 = nn.Sequential(
+        self.conv1  = nn.Sequential(
             nn.Conv2d(3, 64, kernel_size=7, stride=2),
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),
@@ -73,12 +73,48 @@ class GoogleNET(nn.Module):
             nn.LocalResponseNorm(192),
             nn.MaxPool2d(kernel_size=3, stride=2)
         )
+        
+        self.inception3a = Inception()
+        self.inception3b = Inception()
+        
+        self.inception4a = Inception()
+        self.inception4b = Inception()
+        self.inception4c = Inception()
+        self.inception4d = Inception()
+        self.inception4e = Inception()
+        
+        self.inception5a = Inception()
+        self.inception5b = Inception()
+
+        self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2)
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
+        self.fc = nn.Sequential(
+            nn.Dropout(0.4),
+            nn.Linear(1024,1000)
+        )
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.conv3(x)
+        
+        x = self.inception3a(x)
+        x = self.inception3b(x)
+        x = self.maxpool(x)
+
+        x = self.inception4a(x)
+        x = self.inception4b(x)
+        x = self.inception4c(x)
+        x = self.inception4d(x)
+        x = self.inception4e(x)
+        x = self.maxpool(x)
+
+        x = self.inception5a(x)
+        x = self.inception5b(x)
+
+        x = self.avgpool(x)
+        x = self.fc(x)
 
         return x
 
@@ -86,7 +122,6 @@ class GoogleNET(nn.Module):
 
 model = GoogleNET()
 data = load_state_dict_from_url('https://download.pytorch.org/models/googlenet-1378be20.pth')
+model.load_state_dict(data)
 
-for i in data.keys():
-    print(i, data[i].shape)
-print(data.keys())
+#https://github.com/pytorch/vision/blob/main/torchvision/models/googlenet.py
