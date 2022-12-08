@@ -52,18 +52,12 @@ class GoogleNET(nn.Module):
     
     def __init__(self) -> None:
         super().__init__()
-        self.conv1  = nn.Sequential(
-            BasicConv2d(3, 64, kernel_size=7, stride=2),
-            nn.MaxPool2d(kernel_size=3, stride=2),
-        )
-        self.conv2 = nn.Sequential(
-            BasicConv2d(64, 64, kernel_size=1, stride=1)
-        )
-        self.conv3 = nn.Sequential(
-            BasicConv2d(64, 192, kernel_size=3, stride=1),
-            nn.MaxPool2d(kernel_size=3, stride=2)
-        )
+        self.conv1  = BasicConv2d(3, 64, kernel_size=7, stride=2)
+
+        self.conv2 = BasicConv2d(64, 64, kernel_size=1, stride=1)
         
+        self.conv3 = BasicConv2d(64, 192, kernel_size=3, stride=1)
+            
         self.inception3a = Inception(192, 64, 96, 128, 16, 32, 32)
         self.inception3b = Inception(256, 128, 128, 192, 32, 96, 64)
 
@@ -78,16 +72,19 @@ class GoogleNET(nn.Module):
 
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2)
         self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
-        self.fc = nn.Sequential(
-            nn.Dropout(0.4),
-            nn.Linear(1024,1000)
-        )
+        
+        self.dropout = nn.Dropout(0.4)
+        self.fc = nn.Linear(1024,1000)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         
         x = self.conv1(x)
+        x = self.maxpool(x)
+
         x = self.conv2(x)
+
         x = self.conv3(x)
+        x = self.maxpool(x)
         
         x = self.inception3a(x)
         x = self.inception3b(x)
@@ -104,6 +101,9 @@ class GoogleNET(nn.Module):
         x = self.inception5b(x)
 
         x = self.avgpool(x)
+        x = torch.flatten(x, 1)
+
+        x = self.dropout(x)
         x = self.fc(x)
 
         return x
