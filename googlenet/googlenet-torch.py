@@ -1,13 +1,9 @@
 import torch
 import torch.nn as nn
-from PIL import Image
-from torchvision import transforms
 from torch.hub import load_state_dict_from_url
 import torch.nn.functional as F
-import requests
-from io import BytesIO
-import sys
 
+from utils import class_img
 
 class AuxInception(nn.Module):
     def __init__(self, in_channels) -> None:
@@ -27,7 +23,6 @@ class AuxInception(nn.Module):
         x = self.fc2(x)
         
         return x
-
 
 class BasicConv2d(nn.Module):
     def __init__(self, in_channels, out_channels, **kwargs) -> None:
@@ -147,29 +142,4 @@ model.load_state_dict(data)
 
 model.eval()
 
-transform = transforms.Compose([            
- 
- transforms.Resize(256),                    
- transforms.CenterCrop(224),                
- transforms.ToTensor(),                     
- transforms.Normalize(                      
- mean=[0.485, 0.456, 0.406],                
- std=[0.229, 0.224, 0.225]                  
- 
- )])
-
-#'https://raw.githubusercontent.com/srirammanikumar/DogBreedClassifier/master/images/Labrador_retriever_06457.jpg'
-response = requests.get('https://raw.githubusercontent.com/srirammanikumar/DogBreedClassifier/master/images/Labrador_retriever_06457.jpg')
-img = Image.open(BytesIO(response.content))
-img_t = transform(img)
-batch_t = torch.unsqueeze(img_t, 0)
-out = model(batch_t)
-labels = requests.get('https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt').text.split('\n')
-_, index = torch.max(out, 1)
-percentage = torch.nn.functional.softmax(out, dim=1)[0] * 100
-#import matplotlib.pyplot as plt
-#plt.plot(percentage.detach().numpy())
-#plt.show()
-print(index[0])
-print(labels[index[0]], percentage[index[0]].item())
-#https://github.com/pytorch/vision/blob/main/torchvision/models/googlenet.py
+class_img(model)
