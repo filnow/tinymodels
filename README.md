@@ -25,3 +25,5 @@ tinymodels is just for learning how models actually works
 * [GoogleNET](https://arxiv.org/pdf/1409.4842.pdf)
 
 * [InceptionV3](https://arxiv.org/pdf/1512.00567.pdf)
+
+* [EfficientNet](https://arxiv.org/pdf/1905.11946.pdf)
