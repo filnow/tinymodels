@@ -12,7 +12,7 @@ class Block(nn.Module):
         self.conv1 = nn.Conv2d(in_channels, out_channels,kernel_size=1, stride=1, bias=False)
         self.bn1 = nn.BatchNorm2d(out_channels)
         
-        self.conv2 = nn.Conv2d(out_channels,out_channels,kernel_size=3, stride=strd,padding=1, bias=False)
+        self.conv2 = nn.Conv2d(out_channels,out_channels,kernel_size=3, stride=strd, padding=1, bias=False)
         self.bn2 = nn.BatchNorm2d(out_channels)
         
         self.conv3 = nn.Conv2d(out_channels, 4 * out_channels, kernel_size=1, stride=1, bias=False)
@@ -28,7 +28,7 @@ class Block(nn.Module):
 
     def __call__(self, x: torch.Tensor) -> torch.Tensor:
         
-        ident = x.clone()
+        ident = x
         
         x = self.relu(self.bn1(self.conv1(x)))
         x = self.relu(self.bn2(self.conv2(x)))
@@ -67,20 +67,20 @@ class ResNet(nn.Module):
         x = self.relu(self.bn1(self.conv1(x)))
  
         x = self.maxpool(x)
-        x = self.avgpool(x)
       
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
         x = self.layer4(x)
-  
+
+        x = self.avgpool(x)
         x = torch.flatten(x, 1)
         x = self.fc(x)
         return x
 
     def _make_layer(self, Block, num_Blocks, in_channels, stride):
         
-        layers = [Block(self.in_ch,in_channels, stride, sample=True)]
+        layers = [Block(self.in_ch,in_channels, strd=stride, sample=True)]
         
         self.in_ch = in_channels*4
 
