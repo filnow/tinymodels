@@ -5,16 +5,18 @@ import torch.nn.functional as F
 from utils import class_img
 
 class MBConv(nn.Module):
-    def __init__(self, inch, outch, **kwargs) -> None:
+    def __init__(self, inch, outch, k, s, block0=True) -> None:
         super().__init__()
         
-        self._expand_conv = nn.Conv2d(inch, outch, kernel_size=1, bias=False, **kwargs)
-        self._bn0 = nn.BatchNorm2d(outch)
-        self._depthwise_conv = nn.Conv2d(120, 120, kernel_size=3, groups=10, bias=False, **kwargs)
+        if block0:
+            self._expand_conv = nn.Conv2d(inch, outch, kernel_size=k, stride=s, bias=False)
+            self._bn0 = nn.BatchNorm2d(outch)
+        
+        self._depthwise_conv = nn.Conv2d(1, 120, kernel_size=k, stride=s,  groups=1, bias=False)
         self._bn1 = nn.BatchNorm2d(outch)
-        self._se_reduce = nn.Conv2d(inch, outch, kernel_size=1, **kwargs)
-        self._se_expand = nn.Conv2d(inch, outch, kernel_size=1, **kwargs)
-        self._project_conv = nn.Conv2d(inch, outch, kernel_size=1, bias=False, **kwargs)
+        self._se_reduce = nn.Conv2d(inch, outch, kernel_size=k, stride=s)
+        self._se_expand = nn.Conv2d(inch, outch, kernel_size=k, stride=s)
+        self._project_conv = nn.Conv2d(inch, outch, kernel_size=k, stride=s, bias=False)
         self._bn2 = nn.BatchNorm2d(outch)                   
         
     def forward(self, x: torch.Tensor) -> torch.Tensor: 
@@ -39,22 +41,22 @@ class EfficientNET(nn.Module):
 
         self._blocks = nn.Sequential(
             
-            MBConv(32,32,1),
-            MBConv(32,32,1),
-            MBConv(32,32,1),
-            MBConv(32,32,1),
-            MBConv(32,32,1),
-            MBConv(32,32,1),
-            MBConv(32,32,1),
-            MBConv(32,32,1),
-            MBConv(32,32,1),
-            MBConv(32,32,1),
-            MBConv(32,32,1),
-            MBConv(32,32,1),
-            MBConv(32,32,1),
-            MBConv(32,32,1),
-            MBConv(32,32,1),
-            MBConv(32,32,1)
+            MBConv(32,32,1,1, block0=False),
+            MBConv(32,32,1,1),
+            MBConv(32,32,1,1),
+            MBConv(32,32,1,1),
+            MBConv(32,32,1,1),
+            MBConv(32,32,1,1),
+            MBConv(32,32,1,1),
+            MBConv(32,32,1,1),
+            MBConv(32,32,1,1),
+            MBConv(32,32,1,1),
+            MBConv(32,32,1,1),
+            MBConv(32,32,1,1),
+            MBConv(32,32,1,1),
+            MBConv(32,32,1,1),
+            MBConv(32,32,1,1),
+            MBConv(32,32,1,1)
 
         )
 
@@ -74,9 +76,6 @@ class EfficientNET(nn.Module):
         x = self._fc(self.dropout(x))
 
         return x
-
-
-
 
 
 model = EfficientNET()
