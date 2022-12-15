@@ -8,16 +8,20 @@ class MBConv(nn.Module):
     def __init__(self, inch, outch, k, s, block0=True) -> None:
         super().__init__()
         
+        out = inch * 0.25
+        out_project = outch * 0.25
+
+
         if block0:
-            self._expand_conv = nn.Conv2d(inch, outch, kernel_size=k, stride=s, bias=False)
+            self._expand_conv = nn.Conv2d(inch, outch, kernel_size=1, stride=s, bias=False)
             self._bn0 = nn.BatchNorm2d(outch)
         
-        self._depthwise_conv = nn.Conv2d(1, 120, kernel_size=k, stride=s,  groups=1, bias=False)
+        self._depthwise_conv = nn.Conv2d(1, outch,  kernel_size=5, stride=s,  groups=1, bias=False)
         self._bn1 = nn.BatchNorm2d(outch)
-        self._se_reduce = nn.Conv2d(inch, outch, kernel_size=k, stride=s)
-        self._se_expand = nn.Conv2d(inch, outch, kernel_size=k, stride=s)
-        self._project_conv = nn.Conv2d(inch, outch, kernel_size=k, stride=s, bias=False)
-        self._bn2 = nn.BatchNorm2d(outch)                   
+        self._se_reduce = nn.Conv2d(outch, out, kernel_size=1, stride=s)
+        self._se_expand = nn.Conv2d(out, outch, kernel_size=1, stride=s)
+        self._project_conv = nn.Conv2d(outch, out_project, kernel_size=1, stride=s, bias=False)
+        self._bn2 = nn.BatchNorm2d(out_project)                   
         
     def forward(self, x: torch.Tensor) -> torch.Tensor: 
         
@@ -41,28 +45,28 @@ class EfficientNET(nn.Module):
 
         self._blocks = nn.Sequential(
             
-            MBConv(32,32,1,1, block0=False),
-            MBConv(32,32,1,1),
-            MBConv(32,32,1,1),
-            MBConv(32,32,1,1),
-            MBConv(32,32,1,1),
-            MBConv(32,32,1,1),
-            MBConv(32,32,1,1),
-            MBConv(32,32,1,1),
-            MBConv(32,32,1,1),
-            MBConv(32,32,1,1),
-            MBConv(32,32,1,1),
-            MBConv(32,32,1,1),
-            MBConv(32,32,1,1),
-            MBConv(32,32,1,1),
-            MBConv(32,32,1,1),
-            MBConv(32,32,1,1)
+            MBConv(1,32,3,1, block0=False),
+            MBConv(16,96,1,3),
+            MBConv(24,144,1,1),
+            MBConv(24,144,1,1),
+            MBConv(40,240,1,1),
+            MBConv(40,240,1,1),
+            MBConv(80,480,1,1),
+            MBConv(80,480,1,1),
+            MBConv(80,480,1,1),
+            MBConv(112,672,1,1),
+            MBConv(112,672,1,1),
+            MBConv(112,672,1,1),
+            MBConv(192,1152,1,1),
+            MBConv(192,1152,1,1),
+            MBConv(192,1152,1,1),
+            MBConv(192,1152,1,1)
 
         )
 
-        self._conv_head = nn.Conv2d(64, 64, kernel_size=3, stride=3, bias=False)
-        self._bn1 = nn.BatchNorm2d(64)
-        self._fc = nn.Linear(64, 1000)
+        self._conv_head = nn.Conv2d(320, 1280, kernel_size=1, stride=3, bias=False)
+        self._bn1 = nn.BatchNorm2d(1280)
+        self._fc = nn.Linear(1280, 1000)
         self.dropout = nn.Dropout()
         self.avgpool = nn.AdaptiveAvgPool2d(1)
 
@@ -85,4 +89,4 @@ data = load_state_dict_from_url('https://github.com/lukemelas/EfficientNet-PyTor
 model.load_state_dict(data)
 
 for i in data.keys():
-    print(i)
+    print(i, data[i].shape)
