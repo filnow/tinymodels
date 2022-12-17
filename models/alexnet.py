@@ -1,8 +1,7 @@
 import torch
 import torch.nn as nn
-from torch.hub import load_state_dict_from_url
 
-class AlexNet(nn.Module):
+class AlexNET(nn.Module):
     def __init__(self):
         super().__init__()
         self.features = nn.Sequential(
@@ -40,11 +39,3 @@ class AlexNet(nn.Module):
         x = self.classifier(x)
         return x
 
-
-def model_run():
-
-    model = AlexNet()
-    data = load_state_dict_from_url('https://download.pytorch.org/models/alexnet-owt-4df8aa71.pth')
-    model.load_state_dict(data)
-    model.eval()
-    return model

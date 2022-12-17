@@ -1,7 +1,5 @@
 import torch
 import torch.nn as nn
-from torch.hub import load_state_dict_from_url
-from utils import class_img
 import torch.nn.functional as F
 
 class DoubleConvBlock(nn.Module):
@@ -86,11 +84,3 @@ class VGG19(nn.Module):
         x = self.classifier(x)
         return x
 
-
-model = VGG19()
-data = load_state_dict_from_url("https://download.pytorch.org/models/vgg19-dcbb9e9d.pth")
-model.load_state_dict(data)
-
-model.eval()
-
-class_img(model)

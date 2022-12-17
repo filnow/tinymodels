@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
-from models.alexnet import model_run
-from utils import class_img
+from models import *
+from utils import class_img, run_model
 
 app = Flask(__name__)
 
@@ -13,9 +13,10 @@ def predict():
     imagefile = request.files['imagefile']
     image_path = "./images/" + imagefile.filename
     imagefile.save(image_path)
-    name, precentage = class_img(model_run(), image_path)
+    model, name = run_model(GoogleNET())
+    class_name, precentage = class_img(model, image_path)
     
-    classification = '%s (%.2f%%)' % (name, precentage)
+    classification = '%s (%.2f%%) %s' % (class_name, precentage, name)
 
     return render_template('index.html', prediction=classification)
 

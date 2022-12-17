@@ -1,8 +1,6 @@
 import torch
 import torch.nn as nn
-from torch.hub import load_state_dict_from_url
 import torch.nn.functional as F
-from utils import class_img
 
 class AuxInception(nn.Module):
     def __init__(self, in_channels) -> None:
@@ -135,10 +133,4 @@ class GoogleNET(nn.Module):
 
 
 
-model = GoogleNET()
-data = load_state_dict_from_url('https://download.pytorch.org/models/googlenet-1378be20.pth')
-model.load_state_dict(data)
 
-model.eval()
-
-class_img(model)

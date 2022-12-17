@@ -1,7 +1,5 @@
 import torch
 import torch.nn as nn
-from torch.hub import load_state_dict_from_url
-from utils import class_img
 
 class Block(nn.Module):
 
@@ -89,9 +87,3 @@ class ResNet(nn.Module):
         
         return nn.Sequential(*layers)
 
-data  = load_state_dict_from_url('https://download.pytorch.org/models/resnet50-0676ba61.pth')
-model = ResNet()
-model.load_state_dict(data)
-model.eval()
-
-class_img(model)
