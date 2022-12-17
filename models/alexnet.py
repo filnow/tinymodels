@@ -1,9 +1,7 @@
 import torch
 import torch.nn as nn
-from utils import class_img
 from torch.hub import load_state_dict_from_url
 
-# Define model
 class AlexNet(nn.Module):
     def __init__(self):
         super().__init__()
@@ -41,17 +39,12 @@ class AlexNet(nn.Module):
         x = torch.flatten(x, 1)
         x = self.classifier(x)
         return x
-    
-model = AlexNet()
 
-link = 'https://download.pytorch.org/models/alexnet-owt-4df8aa71.pth'
-state = load_state_dict_from_url(link)
-model.load_state_dict(state)
 
-#Freeze param
-for param in model.features.parameters():
-    param.requires_grad = False
+def model_run():
 
-model.eval()
-
-class_img(model)
+    model = AlexNet()
+    data = load_state_dict_from_url('https://download.pytorch.org/models/alexnet-owt-4df8aa71.pth')
+    model.load_state_dict(data)
+    model.eval()
+    return model
