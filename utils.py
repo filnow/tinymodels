@@ -3,10 +3,10 @@ from PIL import Image
 from torchvision import transforms
 import requests
 from torch.hub import load_state_dict_from_url
-
+from typing import Tuple, Any, Union
 from models import *
 
-def class_img(model, image_path):
+def class_img(model: type, image_path: str) -> Tuple[Any, Union[int, float]]:
   
   transform = transforms.Compose([            
  
@@ -20,16 +20,15 @@ def class_img(model, image_path):
   )])
 
   img = Image.open(image_path)
-  img_t = transform(img)
-  batch_t = torch.unsqueeze(img_t, 0)
+  batch_t = torch.unsqueeze(transform(img), 0)
   out = model(batch_t)
   labels = requests.get('https://raw.githubusercontent.com/pytorch/hub/master/imagenet_classes.txt').text.split('\n')
   _, index = torch.max(out, 1)
   percentage = torch.nn.functional.softmax(out, dim=1)[0] * 100
   
-  return labels[index[0]], percentage[index[0]].item()
+  return (labels[index[0]], percentage[index[0]].item())
 
-def run_model(model):
+def run_model(model: Any) -> Tuple[type, str]:
 
   model_name = type(model).__name__
 
@@ -49,4 +48,4 @@ def run_model(model):
   model.load_state_dict(data)
   model.eval()
   
-  return model, model_name
+  return (model, model_name)

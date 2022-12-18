@@ -1,22 +1,5 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-
-class DoubleConvBlock(nn.Module):
-
-    def __init__(self, inch: int, outch: int) -> None:
-        super().__init__()
-
-        self.conv1 = nn.Conv2d(inch, outch, kernel_size=3, padding=1),
-        self.conv2 = nn.Conv2d(outch, outch, kernel_size=3, padding=1)
-        self.maxpool = nn.MaxPool2d(kernel_size=2, stride=2)
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-
-        x = F.relu(self.conv1(x))
-        x = self.maxpool(F.relu(self.conv2(x)))
-
-        return x
 
 class VGG19(nn.Module):
 

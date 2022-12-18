@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from typing import Any, Dict
 
 class AuxInception(nn.Module):
-    def __init__(self, in_channels) -> None:
+    def __init__(self, in_channels: int) -> None:
         super().__init__()
         self.conv = BasicConv2d(in_channels, 128, kernel_size=1)
 
@@ -22,7 +23,7 @@ class AuxInception(nn.Module):
         return x
 
 class BasicConv2d(nn.Module):
-    def __init__(self, in_channels, out_channels, **kwargs) -> None:
+    def __init__(self, in_channels: int, out_channels: int, **kwargs) -> None:
         super().__init__()
         self.conv = nn.Conv2d(in_channels, out_channels, bias=False, **kwargs)
         self.bn = nn.BatchNorm2d(out_channels, eps=0.001)
@@ -34,7 +35,7 @@ class BasicConv2d(nn.Module):
 
 class Inception(nn.Module):
     
-    def __init__(self, in_channels, ch1x1, ch3x3red, ch3x3, ch5x5red, ch5x5, pool_proj) -> None:
+    def __init__(self, in_channels: int, ch1x1: int, ch3x3red: int, ch3x3: int, ch5x5red: int, ch5x5: int, pool_proj: int) -> None:
         super().__init__()
         self.branch1 = BasicConv2d(in_channels, ch1x1, kernel_size=1)
         self.branch2 = nn.Sequential(

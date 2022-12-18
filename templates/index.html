@@ -16,7 +16,8 @@
             <input class="form-control" type="file" name="imagefile" >
             <input class="btn btn-primary mt-3" type="submit" value="Predict Image">
         </form>
-        
+        <button id="show-text-button">Show Text</button>
+        <div id="text-div"></div>
         {% if prediction %}
             <p class="text-center"> Image is a {{prediction}}</p>
         {% endif %}

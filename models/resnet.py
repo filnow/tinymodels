@@ -1,9 +1,10 @@
 import torch
 import torch.nn as nn
+from typing import Type
 
 class Block(nn.Module):
 
-    def __init__(self, in_channels, out_channels, strd=1, sample=False) -> None:
+    def __init__(self, in_channels: int, out_channels: int, strd: int = 1, sample: bool = False) -> None:
         super().__init__()
         
         self.sample = sample
@@ -42,7 +43,7 @@ class Block(nn.Module):
 
 class ResNet(nn.Module):
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.in_ch = 64
 
@@ -76,7 +77,7 @@ class ResNet(nn.Module):
         x = self.fc(x)
         return x
 
-    def _make_layer(self, Block, num_Blocks, in_channels, stride):
+    def _make_layer(self, Block: Type[Block], num_Blocks: int, in_channels: int, stride: int) -> nn.Sequential:
         
         layers = [Block(self.in_ch,in_channels, strd=stride, sample=True)]
         

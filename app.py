@@ -5,7 +5,8 @@ from utils import class_img, run_model
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
-def hello_word(): return render_template('index.html')
+def hello_word(): 
+    return render_template('index.html')
     
 @app.route('/', methods=['POST'])
 def predict():
