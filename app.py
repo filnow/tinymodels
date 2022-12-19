@@ -3,8 +3,10 @@ from models import *
 from utils import class_img, run_model
 
 app = Flask(__name__)
-
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/', methods=['GET'])
+def hello():
+    return render_template('index.html')
+@app.route('/', methods=['POST'])
 def predict():
     
     model_name = request.form.get('myInput', False)
