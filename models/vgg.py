@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 
-class VGG19(nn.Module):
+class VGG(nn.Module):
 
     def __init__(self):
         super().__init__()

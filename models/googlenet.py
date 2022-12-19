@@ -62,7 +62,7 @@ class Inception(nn.Module):
 
         return x
 
-class GoogleNET(nn.Module):
+class GoogleNet(nn.Module):
     
     def __init__(self, aux_logits: bool = True) -> None:
         super().__init__()

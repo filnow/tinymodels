@@ -2,6 +2,7 @@ import torch
 from PIL import Image
 from torchvision import transforms
 import requests
+import torch.nn as nn
 from torch.hub import load_state_dict_from_url
 from typing import Tuple, Any, Union
 from models import *
@@ -28,24 +29,25 @@ def class_img(model: type, image_path: str) -> Tuple[Any, Union[int, float]]:
   
   return (labels[index[0]], percentage[index[0]].item())
 
-def run_model(model: Any) -> Tuple[type, str]:
+def run_model(model_name: str) -> nn.Module:
 
-  model_name = type(model).__name__
-
+  model: nn.Module = globals().get(model_name)()
+  
   pretrained_weights = {
     
-    type(AlexNET()).__name__ : 'https://download.pytorch.org/models/alexnet-owt-4df8aa71.pth',
+    'AlexNet' : 'https://download.pytorch.org/models/alexnet-owt-4df8aa71.pth',
     #EfficientNET() : 'https://github.com/lukemelas/EfficientNet-PyTorch/releases/download/1.0/efficientnet-b0-355c32eb.pth',
-    type(GoogleNET()).__name__ : 'https://download.pytorch.org/models/googlenet-1378be20.pth',
-    type(ResNet()).__name__ : 'https://download.pytorch.org/models/resnet50-0676ba61.pth',
-    type(VGG19()).__name__ : 'https://download.pytorch.org/models/vgg19-dcbb9e9d.pth',
+    'GoogleNET' : 'https://download.pytorch.org/models/googlenet-1378be20.pth',
+    'ResNet' : 'https://download.pytorch.org/models/resnet50-0676ba61.pth',
+    'VGG' : 'https://download.pytorch.org/models/vgg19-dcbb9e9d.pth',
   
   }
   
   assert model_name in pretrained_weights.keys(), f'There is no model called {model_name}' 
   
   data = load_state_dict_from_url(pretrained_weights[model_name])
+ 
   model.load_state_dict(data)
   model.eval()
   
-  return (model, model_name)
+  return model

@@ -36,7 +36,7 @@ class MBConv(nn.Module):
         x += ident
         return x
 
-class EfficientNET(nn.Module):
+class EfficientNet(nn.Module):
     def __init__(self) -> None:
         super().__init__()
         
@@ -82,7 +82,7 @@ class EfficientNET(nn.Module):
         return x
 
 
-model = EfficientNET()
+model = EfficientNet()
 
 #data = load_state_dict_from_url('https://download.pytorch.org/models/efficientnet_b0_rwightman-3dd342df.pth')
 data = load_state_dict_from_url('https://github.com/lukemelas/EfficientNet-PyTorch/releases/download/1.0/efficientnet-b0-355c32eb.pth')
