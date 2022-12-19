@@ -8,15 +8,14 @@ app = Flask(__name__)
 def predict():
     
     model_name = request.form.get('myInput', False)
+    
     imagefile = request.files['imagefile']
-    
     image_path = "./images/" + imagefile.filename
-    
     imagefile.save(image_path)
-    model = run_model(model_name)
-    class_name, precentage = class_img(model, image_path)
     
-    classification = '%s (%.2f%%) %s' % (class_name, precentage, model_name)
+    class_name, precentage = class_img(run_model(model_name), image_path)
+    
+    classification = f'Image is {class_name} in ({precentage:.2f}%) predicted by model: {model_name}'
     
     return render_template('index.html', prediction=classification)
 
