@@ -1,0 +1,37 @@
+/* Add a dark grey background color to the body */
+body {
+    background-color: #333;
+  }
+  
+  /* Style the h1 element with a center-aligned, white text color and a thicker font weight */
+  h1 {
+    color: white;
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  /* Style the form element with a white background color and some padding */
+  form {
+    background-color: white;
+    padding: 20px;
+  }
+  
+  /* Style the input elements with a grey border and some padding */
+  input {
+    border: 1px solid grey;
+    padding: 10px;
+  }
+  
+  /* Style the submit button with a primary color background and white text color */
+  input[type="submit"] {
+    background-color: #337ab7;
+    color: white;
+  }
+  
+  p.text-center {
+    text-align: center;
+    background-color: white;
+    padding: 20px;
+  }
+
+ 

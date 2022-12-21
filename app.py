@@ -2,7 +2,7 @@ from flask import Flask, render_template, request
 from models import *
 from utils import class_img, run_model
 
-app = Flask(__name__)
+app = Flask(__name__, template_folder='./frontend/templates',static_folder='./frontend/static')
 @app.route('/', methods=['GET'])
 def hello():
     return render_template('index.html')
