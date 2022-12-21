@@ -31,8 +31,6 @@ def class_img(model: type, image_path: str) -> Tuple[Any, Union[int, float]]:
 
 def run_model(model_name: str) -> nn.Module:
 
-  model: nn.Module = globals().get(model_name)()
-  
   pretrained_weights = {
     
     'AlexNet' : 'https://download.pytorch.org/models/alexnet-owt-4df8aa71.pth',
@@ -44,6 +42,8 @@ def run_model(model_name: str) -> nn.Module:
   }
   
   assert model_name in pretrained_weights.keys(), f'There is no model called {model_name}' 
+  
+  model: nn.Module = globals().get(model_name)()
   
   data = load_state_dict_from_url(pretrained_weights[model_name])
  
