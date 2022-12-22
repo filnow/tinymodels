@@ -3,7 +3,6 @@
 <html>
     <head>
         <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/styles.css') }}"/>
-        <script src="script.js"></script>
         <title>
             tinymodels
         </title>
@@ -26,8 +25,10 @@
             <label for="predict">Click to predict:</label><br>
             <input class="btn btn-primary mt-3" type="submit" value="Predict Image" name="predict"><br><br>
         </form>
-        {% if prediction %}
-            <p class="text-center">{{prediction}}</p>
-        {% endif %}
+        <script>
+            function resetForm() {
+              document.getElementById("myForm").reset();
+            }
+          </script>
     </body>
 </html>
