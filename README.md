@@ -28,3 +28,5 @@ tinymodels is just for learning how models actually works
 * [EfficientNet](https://arxiv.org/pdf/1905.11946.pdf)
 
     - [MobileNetV2](https://arxiv.org/pdf/1801.04381.pdf)
+
+* [DenseNet](https://arxiv.org/pdf/1608.06993.pdf) - 2018
