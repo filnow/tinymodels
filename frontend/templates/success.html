@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html>
     <head>
+        <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='styles/success_style.css') }}"/>
         <title>
             tinymodels
         </title>
     </head>
     <body>
         <h1 class="text-center"> Image classifier </h1>
+        <img src="{{img_path}}" alt="A description of the image"> 
         <p class="text-center">{{prediction}}</p>
     <body>
 </html>
