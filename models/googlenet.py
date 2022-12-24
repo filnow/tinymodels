@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from typing import Any, Dict
 
 class AuxInception(nn.Module):
     def __init__(self, in_channels: int) -> None:

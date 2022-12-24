@@ -1,7 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
 from models import *
 from utils import class_img, run_model
-import os
 
 app = Flask(__name__, template_folder='./frontend/templates',static_folder='./frontend/static')
 
@@ -16,8 +15,6 @@ def index():
         img_path = "./images/" + imagefile.filename
         imagefile.save(img_path)
         
-        os.chmod(img_path, 0o777) #not secure
-
         class_name, precentage = class_img(run_model(model_name), img_path)
         
         prediction = f'Image is {class_name} in ({precentage:.2f}%) predicted by model: {model_name}'

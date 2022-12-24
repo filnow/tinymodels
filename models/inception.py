@@ -22,7 +22,7 @@ class Inception(nn.Module):
 
 
 
-model = Inception()
+#model = Inception()
 data = load_state_dict_from_url('https://download.pytorch.org/models/inception_v3_google-0cc3c7bd.pth')
 
 for i in data.keys():
