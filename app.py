@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from models import *
 from utils import class_img, run_model
 
-app = Flask(__name__, template_folder='./frontend/templates',static_folder='./frontend/static')
+app = Flask(__name__, template_folder='./templates',static_folder='./static')
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -10,9 +10,9 @@ def index():
     if request.method == 'POST':
 
         model_name = request.form.get('myInput', False)
-        
         imagefile = request.files['imagefile']
-        img_path = "./images/" + imagefile.filename
+        
+        img_path = "./static/images/" + imagefile.filename
         imagefile.save(img_path)
         
         class_name, precentage = class_img(run_model(model_name), img_path)
