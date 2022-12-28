@@ -30,6 +30,7 @@ TestAlexNet = test_model(AlexNet, 'https://download.pytorch.org/models/alexnet-o
 TestGoogleNet = test_model(GoogleNet, 'https://download.pytorch.org/models/googlenet-1378be20.pth')
 TestVGG = test_model(VGG, 'https://download.pytorch.org/models/vgg19-dcbb9e9d.pth')
 TestResNet = test_model(ResNet, 'https://download.pytorch.org/models/resnet50-0676ba61.pth')
+TestInceptionV3 = test_model(InceptionV3, 'https://download.pytorch.org/models/inception_v3_google-0cc3c7bd.pth')
 
 if __name__ == '__main__':
     unittest.main()

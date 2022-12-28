@@ -38,7 +38,7 @@ def run_model(model_name: str) -> nn.Module:
     'GoogleNET' : 'https://download.pytorch.org/models/googlenet-1378be20.pth',
     'ResNet' : 'https://download.pytorch.org/models/resnet50-0676ba61.pth',
     'VGG' : 'https://download.pytorch.org/models/vgg19-dcbb9e9d.pth',
-  
+    'InceptionV3' : 'https://download.pytorch.org/models/inception_v3_google-0cc3c7bd.pth'
   }
   
   assert model_name in pretrained_weights.keys(), f'There is no model called {model_name}' 

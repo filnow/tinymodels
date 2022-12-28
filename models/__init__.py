@@ -3,3 +3,4 @@ from .alexnet import AlexNet
 from .googlenet import GoogleNet
 from .resnet import ResNet
 from .vgg import VGG
+from .inception import InceptionV3
