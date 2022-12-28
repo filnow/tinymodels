@@ -5,6 +5,12 @@ import torch.nn.functional as F
 from utils import class_img
 
 
+class DanseLayer(nn.Module):
+    def __init__(self) -> None:
+        super().__init__()
+        
+
+
 class DenseBlock(nn.Module):
     def __init__(self) -> None:
         super().__init__()
@@ -47,6 +53,7 @@ class Transition(nn.Module):
 
         return x
 
+
 class DenseNet(nn.Module):
     def __init__(self) -> None:
         super().__init__()
@@ -55,6 +62,7 @@ class DenseNet(nn.Module):
         self.avgpool = nn.AdaptiveAvgPool2d((7, 7))
         
         self.features = nn.Sequential(
+            
             nn.Conv2d(3, 64, kernel_size=7, stride=2, bias=False),
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),

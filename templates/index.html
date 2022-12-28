@@ -9,7 +9,7 @@
     </head>
     <body>
         <h1 class="text-center"> Image classifier </h1>
-        <form class="p-3 text-center" action="/", method="post" enctype="multipart/form-data">
+        <form id='myForm' class="p-3 text-center" action="/", method="post" enctype="multipart/form-data">
             <label for="myInput">Choose a model:</label><br>
             <input type="text" id="myInput" name="myInput" list="myList"><br>
             <datalist id="myList">
@@ -27,8 +27,8 @@
             <input class="btn btn-primary mt-3" type="submit" value="Predict Image" name="predict"><br><br>
         </form>
         <script>
-            function resetForm() {
-              document.getElementById("myForm").reset();
+            window.onload = function() {
+                document.getElementById("myForm").reset();
             }
           </script>
     </body>
