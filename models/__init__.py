@@ -1,5 +1,5 @@
 from .alexnet import AlexNet
-#from .efficientnet import EfficientNET
+from .efficientnet import EfficientNet
 from .googlenet import GoogleNet
 from .resnet import ResNet
 from .vgg import VGG

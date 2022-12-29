@@ -6,16 +6,29 @@ from utils import class_img
 
 
 class DanseLayer(nn.Module):
-    def __init__(self) -> None:
+    def __init__(self, inch: int, outch: int) -> None:
         super().__init__()
-        
+        self.norm1 = nn.BatchNorm2d(inch)
+        self.conv1 = nn.Conv2d(inch, outch, kernel_size=1)
 
+        self.norm2 = nn.BatchNorm2d(inch)
+        self.conv2 = nn.Conv2d(inch, outch, kernel_size=3)
+
+        self.relu = nn.ReLU(inplace=True)
+
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
+
+        x = self.conv1(self.relu(self.norm1(x)))
+        x = self.conv2(self.relu(self.norm2(x)))
+
+        return x
 
 class DenseBlock(nn.Module):
-    def __init__(self) -> None:
+    def __init__(self, num: int) -> None:
         super().__init__()
+        self.danseblock = DanseLayer()
 
-        self.denseblock1
+        
     
     def forward(self, x: torch.Tensor) -> torch.Tensor:
 
@@ -59,13 +72,14 @@ class DenseNet(nn.Module):
         super().__init__()
 
         self.maxpool = nn.MaxPool2d(kernel_size=3, stride=2)
-        self.avgpool = nn.AdaptiveAvgPool2d((7, 7))
+        self.avgpool = nn.AdaptiveAvgPool2d((1, 1))
         
         self.features = nn.Sequential(
             
-            nn.Conv2d(3, 64, kernel_size=7, stride=2, bias=False),
+            nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False),
             nn.BatchNorm2d(64),
             nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=3, stride=2, padding=1),
             DenseBlock(),
             Transition(256, 128),
             DenseBlock(),
@@ -94,8 +108,11 @@ class DenseNet(nn.Module):
 
 
 
+model = DenseNet()
 
 data = load_state_dict_from_url('https://download.pytorch.org/models/densenet121-a639ec97.pth')
+
+model.load_state_dict(data, strict=False)
 
 for i in data.keys():
     print(i, data[i].shape)

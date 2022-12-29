@@ -16,13 +16,13 @@ def test_model(model_class, data_url):
 
         def test_predict(self):
             # Generate some test data
-            x_test = torch.rand((64, 3, 224, 224))
+            x_test = torch.rand((1, 3, 224, 224))
 
             # Make predictions with the model
             y_pred = self.model(x_test)
 
             # Check that the shape of the predictions is correct
-            self.assertEqual(y_pred.shape, (64, 1000))
+            self.assertEqual(y_pred.shape, (1, 1000))
 
     return TestModel
 
@@ -31,6 +31,7 @@ TestGoogleNet = test_model(GoogleNet, 'https://download.pytorch.org/models/googl
 TestVGG = test_model(VGG, 'https://download.pytorch.org/models/vgg19-dcbb9e9d.pth')
 TestResNet = test_model(ResNet, 'https://download.pytorch.org/models/resnet50-0676ba61.pth')
 TestInceptionV3 = test_model(InceptionV3, 'https://download.pytorch.org/models/inception_v3_google-0cc3c7bd.pth')
+TestEfficientNet = test_model(EfficientNet, 'https://github.com/lukemelas/EfficientNet-PyTorch/releases/download/1.0/efficientnet-b0-355c32eb.pth')
 
 if __name__ == '__main__':
     unittest.main()
