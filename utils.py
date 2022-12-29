@@ -38,11 +38,12 @@ def run_model(model_name: str) -> nn.Module:
     'GoogleNet' : 'https://download.pytorch.org/models/googlenet-1378be20.pth',
     'ResNet' : 'https://download.pytorch.org/models/resnet50-0676ba61.pth',
     'VGG' : 'https://download.pytorch.org/models/vgg19-dcbb9e9d.pth',
-    'InceptionV3' : 'https://download.pytorch.org/models/inception_v3_google-0cc3c7bd.pth'
+    'InceptionV3' : 'https://download.pytorch.org/models/inception_v3_google-0cc3c7bd.pth',
+    'MobileNetV2' : 'https://download.pytorch.org/models/mobilenet_v2-b0353104.pth'
   }
   
   assert model_name in pretrained_weights.keys(), f'There is no model called {model_name}' 
-  print(model_name)
+ 
   model: nn.Module = globals().get(model_name)()
   
   data = load_state_dict_from_url(pretrained_weights[model_name])

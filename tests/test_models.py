@@ -32,6 +32,7 @@ TestVGG = test_model(VGG, 'https://download.pytorch.org/models/vgg19-dcbb9e9d.pt
 TestResNet = test_model(ResNet, 'https://download.pytorch.org/models/resnet50-0676ba61.pth')
 TestInceptionV3 = test_model(InceptionV3, 'https://download.pytorch.org/models/inception_v3_google-0cc3c7bd.pth')
 TestEfficientNet = test_model(EfficientNet, 'https://github.com/lukemelas/EfficientNet-PyTorch/releases/download/1.0/efficientnet-b0-355c32eb.pth')
+TestMobileNetV2 = test_model(MobileNetV2, 'https://download.pytorch.org/models/mobilenet_v2-b0353104.pth')
 
 if __name__ == '__main__':
     unittest.main()

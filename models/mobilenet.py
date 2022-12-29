@@ -1,56 +1,97 @@
-from typing import Type
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-from torch.hub import load_state_dict_from_url
-
 
 class BootleNeck(nn.Module):
-    def __init__(self, inch: int, outch: int, s: int, block0 = True) -> None:
+    def __init__(self, inch: int, outch: int, hidden_dim: int, s: int, block0 = True) -> None:
         super().__init__()
 
-        self.s = s
+        self.identity = s == 1 and inch == hidden_dim
+        layers = []
 
         if block0:
-            self.conv1 = nn.Conv2d(inch, outch, kernel_size=1, bias=False)
-            self.bn1 = nn.BatchNorm2d(outch)
+            layers.append(
+                self.conv1x1(inch,outch)    
+            )
         
-        self.conv = [
-            nn.Conv2d(outch, outch, kernel_size=3, stride=s, groups=outch, bias=False),
-            nn.ReLU6(),
-            nn.Conv2d(outch, inch, kernel_size=1, bias=False),
-            nn.BatchNorm2d(outch)
-        ]
+        layers.extend([
+            self.conv3x3(outch,s),
+            nn.Conv2d(outch, hidden_dim, kernel_size=1, bias=False),
+            nn.BatchNorm2d(hidden_dim),
+        ])
+
+        self.conv = nn.Sequential(*layers)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        
+        if self.identity:
+            
+            return x + self.conv(x)
 
-        ident = x
+        return self.conv(x)
 
-        x = F.relu6(self.bn1(self.conv1(x)))
-        x = F.relu6(self.conv2(x))
-        x = self.bn2(self.conv3)
+    @staticmethod
+    def conv1x1(inch: int, outch: int):
 
-        if self.s != 2:
-            x += ident
+        return nn.Sequential(
+            nn.Conv2d(inch, outch, kernel_size=1, bias=False),
+            nn.BatchNorm2d(outch),
+            nn.ReLU6(inplace=True)
+        )
 
-        return x
+    @staticmethod
+    def conv3x3(inch: int, s: int):
+        
+        return nn.Sequential(
+            nn.Conv2d(inch, inch, kernel_size=3, stride=s, padding=1, groups=inch, bias=False),
+            nn.BatchNorm2d(inch),
+            nn.ReLU6(inplace=True)
+        )
 
-
+    
 class MobileNetV2(nn.Module):
     def __init__(self) -> None:
         super().__init__()
+        
+        self.cfgs = [
+            # t, c, n, s
+            [1,  16, 1, 1],
+            [6,  24, 2, 2],
+            [6,  32, 3, 2],
+            [6,  64, 4, 2],
+            [6,  96, 3, 1],
+            [6, 160, 3, 2],
+            [6, 320, 1, 1],
+        ]
+        
+        #TODO: make it better
 
+        features = [self.first_conv(3, 32, 3, 2), BootleNeck(96,32,16,1, block0=False)]
 
-        self.features = nn.Sequential(
-            self.first_conv(),
-            self._make_layer(BootleNeck,0,16,32,1)
-            
-        )
+        features.append(BootleNeck(16,96,24,2)) #f2
+        features.append(BootleNeck(24,144,24,1)) #f3
+        features.append(BootleNeck(24,144,32,2)) #f4
+        features.append(BootleNeck(32,192,32,1)) #f5
+        features.append(BootleNeck(32,192,32,1)) #f6 
+        features.append(BootleNeck(32,192,64,2)) #f7
+        features.append(BootleNeck(64,384,64,1)) #f8
+        features.append(BootleNeck(64,384,64,1)) #f9
+        features.append(BootleNeck(64,384,64,1)) #f10
+        features.append(BootleNeck(64,384,96,1)) #f11
+        features.append(BootleNeck(96,576,96,1)) #f12
+        features.append(BootleNeck(96,576,96,1)) #f13
+        features.append(BootleNeck(96,576,160,2)) #f14
+        features.append(BootleNeck(160,960,160,1)) #f15
+        features.append(BootleNeck(160,960,160,1)) #f16
+        features.append(BootleNeck(160,960,320,1)) #f17
+    
+        features.append(self.first_conv(320, 1280, 1, 1))
 
-        self.avgpool = nn.AdaptiveMaxPool2d((7,7))
+        self.features = nn.Sequential(*features)
+
+        self.avgpool = nn.AdaptiveAvgPool2d((1,1))
 
         self.classifier = nn.Sequential(
-            nn.Dropout(),
+            nn.Dropout(p=0.2),
             nn.Linear(1280,1000)
         )
 
@@ -62,29 +103,9 @@ class MobileNetV2(nn.Module):
         x = self.classifier(x)
         return x
 
-    def _make_layer(self, BootleNeck: Type[BootleNeck], num_Blocks: int, in_channels: int, out_channels: int, stride: int) -> nn.Sequential:
-        
-        layers = [BootleNeck(in_channels, out_channels, s=stride, block0=False)]
-        
-        if num_Blocks != 0:
-            for _ in range(num_Blocks):
-                layers.append(BootleNeck(in_channels, out_channels, s=1))
-            
-        return nn.Sequential(*layers)
-
     @staticmethod
-    def first_conv():
-        return nn.Sequential(*[nn.Conv2d(3, 32, kernel_size=3, stride=2, bias=False),
-            nn.BatchNorm2d(32),
-            nn.ReLU6()
+    def first_conv(inch: int, outch: int, k: int, s: int):
+        return nn.Sequential(*[nn.Conv2d(inch, outch, kernel_size=k, stride=2, bias=False),
+            nn.BatchNorm2d(outch),
+            nn.ReLU6(inplace=True)
             ])
-
-
-data = load_state_dict_from_url('https://download.pytorch.org/models/mobilenet_v2-b0353104.pth')
-
-model = MobileNetV2()
-model.load_state_dict(data)
-model.eval
-
-for i in data.keys():
-    print(i, data[i].shape)

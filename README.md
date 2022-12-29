@@ -8,7 +8,7 @@ And to make a simple web app to display results of this models
 
 The models are implemented from the papers with pretrained weights
 
-tinymodels is just for learning how models actually works
+tinymodels is just for learning how models actually work
 
 # Architectures
 
@@ -24,7 +24,7 @@ tinymodels is just for learning how models actually works
     
 * [DenseNet](https://arxiv.org/pdf/1608.06993.pdf) - 2018
 
-* [MobileNetV2](https://arxiv.org/pdf/1801.04381.pdf) - 2019
+* [MobileNetV2](https://arxiv.org/pdf/1801.04381.pdf) - 2019    &#x2714;
 
 * [EfficientNet](https://arxiv.org/pdf/1905.11946.pdf) - 2020   &#x2714;
 
