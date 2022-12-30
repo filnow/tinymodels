@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 class BootleNeck(nn.Module):
-    def __init__(self, inch: int, outch: int, hidden_dim: int, s: int, block0 = True) -> None:
+    def __init__(self, inch: int, outch: int, hidden_dim: int, s: int, block0: bool = True) -> None:
         super().__init__()
 
         self.identity = s == 1 and inch == hidden_dim
@@ -30,7 +30,7 @@ class BootleNeck(nn.Module):
         return self.conv(x)
 
     @staticmethod
-    def conv1x1(inch: int, outch: int):
+    def conv1x1(inch: int, outch: int) -> nn.Sequential:
 
         return nn.Sequential(
             nn.Conv2d(inch, outch, kernel_size=1, bias=False),
@@ -39,7 +39,7 @@ class BootleNeck(nn.Module):
         )
 
     @staticmethod
-    def conv3x3(inch: int, s: int):
+    def conv3x3(inch: int, s: int) -> nn.Sequential:
         
         return nn.Sequential(
             nn.Conv2d(inch, inch, kernel_size=3, stride=s, padding=1, groups=inch, bias=False),
@@ -105,7 +105,7 @@ class MobileNetV2(nn.Module):
 
     @staticmethod
     def first_conv(inch: int, outch: int, k: int, s: int):
-        return nn.Sequential(*[nn.Conv2d(inch, outch, kernel_size=k, stride=2, bias=False),
+        return nn.Sequential(*[nn.Conv2d(inch, outch, kernel_size=k, stride=s, bias=False),
             nn.BatchNorm2d(outch),
             nn.ReLU6(inplace=True)
             ])

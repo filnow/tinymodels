@@ -14,9 +14,9 @@ class MBConv(nn.Module):
         out = int(inch * 0.25)
 
         if s == 2:
-            pad = [(k-1)//2-1, (k-1)//2]
+            pad = ((k-1)//2-1, (k-1)//2)
         else:
-            pad = [(k-1)//2]
+            pad = ((k-1)//2, (k-1)//2)
         
         if block0:
             self._expand_conv = nn.Conv2d(inch, outch, kernel_size=1, bias=False)

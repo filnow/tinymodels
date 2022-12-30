@@ -2,10 +2,29 @@ import torch
 from PIL import Image
 from torchvision import transforms
 import requests
+import re
 import torch.nn as nn
 from torch.hub import load_state_dict_from_url
 from typing import Tuple, Any, Union
 from models import *
+
+
+#copy from pytorch DenseNet to match dict
+def _load_state_dict(model: nn.Module, data_link: str) -> None:
+
+    pattern = re.compile(
+        r"^(.*denselayer\d+\.(?:norm|relu|conv))\.((?:[12])\.(?:weight|bias|running_mean|running_var))$"
+    )
+
+    state_dict = load_state_dict_from_url(data_link)
+    for key in list(state_dict.keys()):
+        res = pattern.match(key)
+        if res:
+            new_key = res.group(1) + res.group(2)
+            state_dict[new_key] = state_dict[key]
+            del state_dict[key]
+    
+    model.load_state_dict(state_dict)
 
 def class_img(model: type, image_path: str) -> Tuple[Any, Union[int, float]]:
   
@@ -39,16 +58,22 @@ def run_model(model_name: str) -> nn.Module:
     'ResNet' : 'https://download.pytorch.org/models/resnet50-0676ba61.pth',
     'VGG' : 'https://download.pytorch.org/models/vgg19-dcbb9e9d.pth',
     'InceptionV3' : 'https://download.pytorch.org/models/inception_v3_google-0cc3c7bd.pth',
-    'MobileNetV2' : 'https://download.pytorch.org/models/mobilenet_v2-b0353104.pth'
+    'MobileNetV2' : 'https://download.pytorch.org/models/mobilenet_v2-b0353104.pth',
+    'DenseNet' : 'https://download.pytorch.org/models/densenet121-a639ec97.pth'
+  
   }
   
   assert model_name in pretrained_weights.keys(), f'There is no model called {model_name}' 
  
   model: nn.Module = globals().get(model_name)()
+
+  if model_name == 'DenseNet':
+    _load_state_dict(model, pretrained_weights[model_name])
   
-  data = load_state_dict_from_url(pretrained_weights[model_name])
- 
-  model.load_state_dict(data)
+  else:
+    data = load_state_dict_from_url(pretrained_weights[model_name])
+    model.load_state_dict(data)
+  
   model.eval()
   
   return model

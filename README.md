@@ -6,7 +6,7 @@ The goal of this repo is to implement DL models for image classification in:
 
 And to make a simple web app to display results of this models
 
-The models are implemented from the papers with pretrained weights
+Models are implemented from the papers with pretrained weights
 
 tinymodels is just for learning how models actually work
 
@@ -22,7 +22,7 @@ tinymodels is just for learning how models actually work
 
 * [ResNet](https://arxiv.org/pdf/1704.06904.pdf) - 2017     &#x2714;
     
-* [DenseNet](https://arxiv.org/pdf/1608.06993.pdf) - 2018
+* [DenseNet](https://arxiv.org/pdf/1608.06993.pdf) - 2018   &#x2714;
 
 * [MobileNetV2](https://arxiv.org/pdf/1801.04381.pdf) - 2019    &#x2714;
 
