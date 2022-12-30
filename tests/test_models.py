@@ -1,5 +1,5 @@
 #TODO: write a test base on pytorch implementations of models and my models
-
+from utils import _load_state_dict
 from models import *
 from torch.hub import load_state_dict_from_url
 import unittest
@@ -9,9 +9,14 @@ def test_model(model_class, data_url):
     class TestModel(unittest.TestCase):
         def setUp(self):
             # Load the model and weights
-            self.data = load_state_dict_from_url(data_url)
             self.model = model_class()
-            self.model.load_state_dict(self.data)
+            
+            if model_class == DenseNet:
+                _load_state_dict(self.model, data_url)
+            else:
+                self.data = load_state_dict_from_url(data_url)
+                self.model.load_state_dict(self.data)
+            
             self.model.eval()
 
         def test_predict(self):
@@ -33,6 +38,8 @@ TestResNet = test_model(ResNet, 'https://download.pytorch.org/models/resnet50-06
 TestInceptionV3 = test_model(InceptionV3, 'https://download.pytorch.org/models/inception_v3_google-0cc3c7bd.pth')
 TestEfficientNet = test_model(EfficientNet, 'https://github.com/lukemelas/EfficientNet-PyTorch/releases/download/1.0/efficientnet-b0-355c32eb.pth')
 TestMobileNetV2 = test_model(MobileNetV2, 'https://download.pytorch.org/models/mobilenet_v2-b0353104.pth')
+TestDenseNet = test_model(DenseNet, 'https://download.pytorch.org/models/densenet121-a639ec97.pth')
+
 
 if __name__ == '__main__':
     unittest.main()
