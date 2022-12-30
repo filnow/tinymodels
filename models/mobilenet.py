@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 
+
 class BootleNeck(nn.Module):
     def __init__(self, inch: int, outch: int, hidden_dim: int, s: int, block0: bool = True) -> None:
         super().__init__()
