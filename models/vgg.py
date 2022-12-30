@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 
+
 class VGG(nn.Module):
 
     def __init__(self):
@@ -48,6 +49,7 @@ class VGG(nn.Module):
         )
         
         self.avgpool = nn.AdaptiveAvgPool2d((7, 7))
+        
         self.classifier = nn.Sequential(
             
             nn.Linear(25088, 4096),
@@ -66,24 +68,5 @@ class VGG(nn.Module):
         x = torch.flatten(x, 1)
         x = self.classifier(x)
         return x
-
-def _make_layer(inch: int, outch: int, num: int) -> nn.Sequential:
-
-    layer = []
-
-    conv2 = [nn.Conv2d(inch, outch, kernel_size=3, padding=1), nn.ReLU(inplace=True)]
-    maxpool = [nn.MaxPool2d(kernel_size=2, stride=2)]
-    
-    for i in range(num+2):
-
-        if i == 2 or (i % 5 == 0 and i != 0):
-            layer+=maxpool
-            outch *= 2
-        else:
-            layer+=conv2 
-        
-        inch = outch
-
-    return nn.Sequential(*layer)
 
 

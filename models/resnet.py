@@ -2,12 +2,13 @@ import torch
 import torch.nn as nn
 from typing import Type
 
+
 class Block(nn.Module):
 
     def __init__(self, in_channels: int, out_channels: int, strd: int = 1, sample: bool = False) -> None:
-        super().__init__()
-        
+        super().__init__()        
         self.sample = sample
+        
         self.conv1 = nn.Conv2d(in_channels, out_channels,kernel_size=1, stride=1, bias=False)
         self.bn1 = nn.BatchNorm2d(out_channels)
         
@@ -25,7 +26,7 @@ class Block(nn.Module):
                 nn.BatchNorm2d(4 * out_channels)
             )
 
-    def __call__(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         
         ident = x
         

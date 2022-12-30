@@ -54,37 +54,24 @@ class MobileNetV2(nn.Module):
         
         self.cfgs = [
             # t, c, n, s
-            [1,  16, 1, 1],
-            [6,  24, 2, 2],
-            [6,  32, 3, 2],
-            [6,  64, 4, 2],
-            [6,  96, 3, 1],
-            [6, 160, 3, 2],
-            [6, 320, 1, 1],
+            [24,  16, 1, 2],
+            [32,  24, 2, 2],
+            [64,  32, 3, 2],
+            [96,  64, 4, 2],
+            [160,  96, 3, 2],
+            [320, 160, 3, 1]
         ]
-        
-        #TODO: make it better
 
-        features = [self.first_conv(3, 32, 3, 2), BootleNeck(96,32,16,1, block0=False)]
+        features = [self.convkxk(3, 32, 3, 2), BootleNeck(96,32,16,1, block0=False)]
 
-        features.append(BootleNeck(16,96,24,2)) #f2
-        features.append(BootleNeck(24,144,24,1)) #f3
-        features.append(BootleNeck(24,144,32,2)) #f4
-        features.append(BootleNeck(32,192,32,1)) #f5
-        features.append(BootleNeck(32,192,32,1)) #f6 
-        features.append(BootleNeck(32,192,64,2)) #f7
-        features.append(BootleNeck(64,384,64,1)) #f8
-        features.append(BootleNeck(64,384,64,1)) #f9
-        features.append(BootleNeck(64,384,64,1)) #f10
-        features.append(BootleNeck(64,384,96,1)) #f11
-        features.append(BootleNeck(96,576,96,1)) #f12
-        features.append(BootleNeck(96,576,96,1)) #f13
-        features.append(BootleNeck(96,576,160,2)) #f14
-        features.append(BootleNeck(160,960,160,1)) #f15
-        features.append(BootleNeck(160,960,160,1)) #f16
-        features.append(BootleNeck(160,960,320,1)) #f17
-    
-        features.append(self.first_conv(320, 1280, 1, 1))
+        for t,c,n,s in self.cfgs:
+            for i in range(n):
+                if i+1 == n:
+                    features.append(BootleNeck(c,c*6,t,s))
+                else:
+                    features.append(BootleNeck(c,c*6,c,1))
+
+        features.append(self.convkxk(320, 1280, 1, 1))
 
         self.features = nn.Sequential(*features)
 
@@ -104,7 +91,7 @@ class MobileNetV2(nn.Module):
         return x
 
     @staticmethod
-    def first_conv(inch: int, outch: int, k: int, s: int):
+    def convkxk(inch: int, outch: int, k: int, s: int):
         return nn.Sequential(*[nn.Conv2d(inch, outch, kernel_size=k, stride=s, bias=False),
             nn.BatchNorm2d(outch),
             nn.ReLU6(inplace=True)
