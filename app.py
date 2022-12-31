@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request, redirect, url_for
-from models import *
 from utils import class_img, run_model
+
 
 app = Flask(__name__, template_folder='./templates',static_folder='./static')
 
@@ -27,7 +27,9 @@ def index():
 def success():
 
     prediction = request.args.get('prediction')
+
     img_path = request.args.get('img_path')
+    
     return render_template('success.html', prediction=prediction, img_path=img_path)
 
 
