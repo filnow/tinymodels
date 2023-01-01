@@ -17,6 +17,7 @@ def _load_state_dict(model: nn.Module, data_link: str) -> None:
     )
 
     state_dict = load_state_dict_from_url(data_link)
+    
     for key in list(state_dict.keys()):
         res = pattern.match(key)
         if res:
@@ -26,7 +27,7 @@ def _load_state_dict(model: nn.Module, data_link: str) -> None:
     
     model.load_state_dict(state_dict)
 
-def class_img(model: type, image_path: str) -> Tuple[Any, Union[int, float]]:
+def class_img(model: type, image_path: str) -> Tuple[str, Union[int, float]]:
   
   transform = transforms.Compose([            
  

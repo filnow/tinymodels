@@ -3,9 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
+@torch.jit.script
 def swish(x):
     return x * torch.sigmoid(x)
-
 
 class MBConv(nn.Module):
     def __init__(self, inch: int, k: int, s:int , project_out: int, dilation: int = 1, block0: bool = True) -> None:

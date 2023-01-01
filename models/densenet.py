@@ -1,7 +1,7 @@
 from collections import OrderedDict
 import torch
 import torch.nn as nn
-
+from typing import List
 
 class DenseLayer(nn.Module):
     def __init__(self, inch: int) -> None:
@@ -14,16 +14,14 @@ class DenseLayer(nn.Module):
         self.relu2 = nn.ReLU(inplace=True)
         self.conv2 = nn.Conv2d(128, 32, kernel_size=3, padding=1, bias=False)
     
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: List[torch.Tensor]) -> torch.Tensor:
         
-        x = [x] if isinstance(x, torch.Tensor) else x
-        
-        x = torch.cat(x, 1)
+        out = torch.cat(x, 1)
 
-        x = self.conv1(self.relu1(self.norm1(x)))
-        x = self.conv2(self.relu2(self.norm2(x)))
+        out = self.conv1(self.relu1(self.norm1(out)))
+        out = self.conv2(self.relu2(self.norm2(out)))
         
-        return x
+        return out
 
 
 class DenseBlock(nn.Module):
@@ -45,9 +43,9 @@ class DenseBlock(nn.Module):
 
             out.append(layer_out)
 
-        out = torch.cat(out, 1)
+        y = torch.cat(out, 1)
 
-        return out
+        return y
 
 
 class Transition(nn.Module):
