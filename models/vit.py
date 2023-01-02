@@ -67,7 +67,6 @@ class Encoder(nn.Module):
 class ViT(nn.Module):
     def __init__(self) -> None:
         super().__init__()
-
         self.patch_size = 16    #vit_b_16
         self.class_token = nn.Parameter(torch.zeros(1, 1, 768))
         self.conv_proj = nn.Conv2d(3, 768, kernel_size=self.patch_size, stride=self.patch_size)

@@ -46,7 +46,8 @@ class MBConv(nn.Module):
         x_squeezed = F.adaptive_avg_pool2d(x, 1)
         x_squeezed = swish(self._se_reduce(x_squeezed))
         x_squeezed = self._se_expand(x_squeezed)
-        x  = torch.sigmoid(x_squeezed) * x
+        
+        x  *= torch.sigmoid(x_squeezed) 
         
         x = self._bn2(self._project_conv(x))
         
