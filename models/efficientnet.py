@@ -3,10 +3,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-@torch.jit.script
-def swish(x):
-    return x * torch.sigmoid(x)
-
 class MBConv(nn.Module):
     def __init__(self, inch: int, k: int, s:int , project_out: int, dilation: int = 1, block0: bool = True) -> None:
         super().__init__()
@@ -39,12 +35,12 @@ class MBConv(nn.Module):
         ident = x
         
         if self.block0:
-            x = swish(self._bn0(self._expand_conv(x)))
+            x = F.silu(self._bn0(self._expand_conv(x)), inplace=True)
         
-        x = swish(self._bn1(self._depthwise_conv(x)))
+        x = F.silu(self._bn1(self._depthwise_conv(x)), inplace=True)
         
         x_squeezed = F.adaptive_avg_pool2d(x, 1)
-        x_squeezed = swish(self._se_reduce(x_squeezed))
+        x_squeezed = F.silu(self._se_reduce(x_squeezed), inplace=True)
         x_squeezed = self._se_expand(x_squeezed)
         
         x  *= torch.sigmoid(x_squeezed) 
@@ -93,9 +89,9 @@ class EfficientNet(nn.Module):
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         
-        x = swish(self._bn0(self._conv_stem(x)))
+        x = F.silu(self._bn0(self._conv_stem(x)), inplace=True)
         x = self._blocks(x)
-        x = swish(self._bn1(self._conv_head(x)))
+        x = F.silu(self._bn1(self._conv_head(x)), inplace=True)
         x = self.avgpool(x)
         x = torch.flatten(x, 1)
         x = self._fc(self.dropout(x))
