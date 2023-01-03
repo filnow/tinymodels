@@ -9,6 +9,8 @@ def test_model(model_class, data_url):
     class TestModel(unittest.TestCase):
         def setUp(self):
             # Load the model and weights
+            device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
             self.model = model_class()
             
             if model_class == DenseNet:
@@ -17,6 +19,7 @@ def test_model(model_class, data_url):
                 self.data = load_state_dict_from_url(data_url)
                 self.model.load_state_dict(self.data)
             
+            self.model.to(device)
             self.model.eval()
 
         def test_predict(self):

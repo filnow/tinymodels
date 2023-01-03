@@ -51,6 +51,8 @@ def class_img(model: type, image_path: str) -> Tuple[str, Union[int, float]]:
 
 def run_model(model_name: str) -> nn.Module:
 
+  device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+  
   pretrained_weights = {
     
     'AlexNet' : 'https://download.pytorch.org/models/alexnet-owt-4df8aa71.pth',
@@ -75,6 +77,7 @@ def run_model(model_name: str) -> nn.Module:
     data = load_state_dict_from_url(pretrained_weights[model_name])
     model.load_state_dict(data)
   
+  model.to(device)
   model.eval()
   
   return model

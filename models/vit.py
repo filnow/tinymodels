@@ -94,10 +94,8 @@ class ViT(nn.Module):
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         
         x = self._process_input(x)
-    
-        batch_class_token = self.class_token.expand(x.shape[0], -1, -1)
-        
-        x = torch.cat([batch_class_token, x], dim=1)
+
+        x = torch.cat([self.class_token, x], dim=1)
         
         x = self.encoder(x)
         
@@ -114,4 +112,4 @@ model = ViT()
 model.load_state_dict(data)
 model.eval()
 
-print(class_img(model, '/home/filnow/fun/tinymodels/static/images/Labrador_retriever_06457.jpg'))
+print(class_img(model, './static/images/Labrador_retriever_06457.jpg'))
