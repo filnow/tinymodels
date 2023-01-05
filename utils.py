@@ -5,7 +5,7 @@ import requests
 import re
 import torch.nn as nn
 from torch.hub import load_state_dict_from_url
-from typing import Tuple, Any, Union
+from typing import Tuple, Union
 from models import *
 
 
@@ -62,7 +62,8 @@ def run_model(model_name: str) -> nn.Module:
     'VGG' : 'https://download.pytorch.org/models/vgg19-dcbb9e9d.pth',
     'InceptionV3' : 'https://download.pytorch.org/models/inception_v3_google-0cc3c7bd.pth',
     'MobileNetV2' : 'https://download.pytorch.org/models/mobilenet_v2-b0353104.pth',
-    'DenseNet' : 'https://download.pytorch.org/models/densenet121-a639ec97.pth'
+    'DenseNet' : 'https://download.pytorch.org/models/densenet121-a639ec97.pth',
+    'ViT' : 'https://download.pytorch.org/models/vit_b_16-c867db91.pth' 
   
   }
   

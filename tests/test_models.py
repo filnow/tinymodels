@@ -42,7 +42,7 @@ TestInceptionV3 = test_model(InceptionV3, 'https://download.pytorch.org/models/i
 TestEfficientNet = test_model(EfficientNet, 'https://github.com/lukemelas/EfficientNet-PyTorch/releases/download/1.0/efficientnet-b0-355c32eb.pth')
 TestMobileNetV2 = test_model(MobileNetV2, 'https://download.pytorch.org/models/mobilenet_v2-b0353104.pth')
 TestDenseNet = test_model(DenseNet, 'https://download.pytorch.org/models/densenet121-a639ec97.pth')
-
+TestViT = test_model(ViT, 'https://download.pytorch.org/models/vit_b_16-c867db91.pth')
 
 if __name__ == '__main__':
     unittest.main()

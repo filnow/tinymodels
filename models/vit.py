@@ -1,9 +1,6 @@
 import torch
 import torch.nn as nn
-from torch.hub import load_state_dict_from_url
-
 from collections import OrderedDict
-from utils import class_img
 
 
 class MLP(nn.Module):
@@ -22,17 +19,17 @@ class MLP(nn.Module):
         return x
 
 
-class EncoderBlock(nn.Module):
+class EncoderBlock(nn.Module):         
     def __init__(self) -> None:
         super().__init__()
         self.ln_1 = nn.LayerNorm(768, eps=1e-6)
-        self.self_attention = nn.MultiheadAttention(768, 768, batch_first=True)
+        self.self_attention = nn.MultiheadAttention(768, 12, batch_first=True)
         self.ln_2 = nn.LayerNorm(768, eps=1e-6)
         self.mlp = MLP()
         
         self.dropout = nn.Dropout()
     
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> torch.Tensor: 
         
         ident = x
         
@@ -53,19 +50,20 @@ class Encoder(nn.Module):
         super().__init__()
         layers = OrderedDict((f"encoder_layer_{i}", EncoderBlock()) for i in range(12))
 
-        self.pos_embedding = nn.Parameter(torch.empty(1,197,768).normal_(std=0.02))
+        self.pos_embedding = nn.Parameter(torch.empty(1,197,768))
         self.layers = nn.Sequential(layers)
         self.ln = nn.LayerNorm(768, eps=1e-6)
         self.dropout = nn.Dropout()
     
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> torch.Tensor: 
 
         x += self.pos_embedding
+        
         return self.ln(self.layers(self.dropout(x)))
 
 
 class ViT(nn.Module):
-    def __init__(self) -> None:
+    def __init__(self) -> None:     
         super().__init__()
         self.patch_size = 16    #vit_b_16
         self.class_token = nn.Parameter(torch.zeros(1, 1, 768))
@@ -78,7 +76,7 @@ class ViT(nn.Module):
         
         self.heads = nn.Sequential(heads_layers)
 
-    def _process_input(self, x: torch.Tensor) -> torch.Tensor:
+    def _process_input(self, x: torch.Tensor) -> torch.Tensor: 
         
         n, _, h, w = x.shape
         n_h = h // self.patch_size
@@ -86,12 +84,11 @@ class ViT(nn.Module):
 
         x = self.conv_proj(x)
 
-        x = x.reshape(n, 768, n_h * n_w)
-        x = x.permute(0,2,1)
+        x = x.reshape(n, 768, n_h * n_w).permute(0,2,1)
 
         return x
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
+    def forward(self, x: torch.Tensor) -> torch.Tensor: 
         
         x = self._process_input(x)
 
@@ -104,12 +101,3 @@ class ViT(nn.Module):
         x = self.heads(x)
 
         return x
-
-
-data = load_state_dict_from_url('https://download.pytorch.org/models/vit_b_16-c867db91.pth')
-
-model = ViT()
-model.load_state_dict(data)
-model.eval()
-
-print(class_img(model, './static/images/Labrador_retriever_06457.jpg'))

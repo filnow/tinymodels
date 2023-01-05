@@ -28,7 +28,7 @@ tinymodels is just for learning how models actually work
 
 * [EfficientNet](https://arxiv.org/pdf/1905.11946.pdf) - 2020   &#x2714;
 
-* [ViT](https://arxiv.org/pdf/2010.11929.pdf) - 2021
+* [ViT](https://arxiv.org/pdf/2010.11929.pdf) - 2021    &#x2714;
 
 * [SwinTransformer](https://arxiv.org/pdf/2103.14030.pdf) - 2021 
 
