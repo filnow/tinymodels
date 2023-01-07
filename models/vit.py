@@ -48,7 +48,7 @@ class EncoderBlock(nn.Module):
 class Encoder(nn.Module):
     def __init__(self) -> None:
         super().__init__()
-        layers = OrderedDict((f"encoder_layer_{i}", EncoderBlock()) for i in range(12))
+        layers: OrderedDict[str, nn.Module] = OrderedDict((f"encoder_layer_{i}", EncoderBlock()) for i in range(12))
 
         self.pos_embedding = nn.Parameter(torch.empty(1,197,768))
         self.layers = nn.Sequential(layers)
@@ -71,7 +71,7 @@ class ViT(nn.Module):
 
         self.encoder = Encoder()
         
-        heads_layers = OrderedDict()
+        heads_layers: OrderedDict[str, nn.Module] = OrderedDict()
         heads_layers["head"] = nn.Linear(768, 1000)
         
         self.heads = nn.Sequential(heads_layers)

@@ -1,4 +1,4 @@
-from typing import List, Union
+from typing import List
 import torch
 import torch.nn as nn
 
@@ -8,7 +8,7 @@ class BootleNeck(nn.Module):
         super().__init__()
 
         self.identity = s == 1 and inch == hidden_dim
-        layers: List[Union[nn.Sequential, nn.Conv2d, nn.BatchNorm2d]] = []
+        layers: List[nn.Module] = []
 
         if block0:
             layers.append(
