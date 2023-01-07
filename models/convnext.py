@@ -78,7 +78,7 @@ class ConvNeXt(nn.Module):
                 
                 layers.append(
                     nn.Sequential(
-                        nn.GroupNorm(1, inch),
+                        Layer2dNorm(inch),
                         nn.Conv2d(inch, outch//2, kernel_size=2, stride=2)
                     )
                 )
