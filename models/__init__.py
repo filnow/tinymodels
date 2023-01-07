@@ -7,3 +7,4 @@ from .inception import InceptionV3
 from .mobilenet import MobileNetV2
 from .densenet import DenseNet
 from .vit import ViT
+from .convnext import ConvNeXt

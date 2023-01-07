@@ -63,7 +63,8 @@ def run_model(model_name: str) -> nn.Module:
     'InceptionV3' : 'https://download.pytorch.org/models/inception_v3_google-0cc3c7bd.pth',
     'MobileNetV2' : 'https://download.pytorch.org/models/mobilenet_v2-b0353104.pth',
     'DenseNet' : 'https://download.pytorch.org/models/densenet121-a639ec97.pth',
-    'ViT' : 'https://download.pytorch.org/models/vit_b_16-c867db91.pth' 
+    'ViT' : 'https://download.pytorch.org/models/vit_b_16-c867db91.pth',
+    'ConvNeXt' : 'https://download.pytorch.org/models/convnext_tiny-983f1562.pth' 
   
   }
   

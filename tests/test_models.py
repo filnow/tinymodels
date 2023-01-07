@@ -43,6 +43,7 @@ TestEfficientNet = test_model(EfficientNet, 'https://github.com/lukemelas/Effici
 TestMobileNetV2 = test_model(MobileNetV2, 'https://download.pytorch.org/models/mobilenet_v2-b0353104.pth')
 TestDenseNet = test_model(DenseNet, 'https://download.pytorch.org/models/densenet121-a639ec97.pth')
 TestViT = test_model(ViT, 'https://download.pytorch.org/models/vit_b_16-c867db91.pth')
+TestConvNeXt = test_model(ConvNeXt, 'https://download.pytorch.org/models/convnext_tiny-983f1562.pth')
 
 if __name__ == '__main__':
     unittest.main()

@@ -32,15 +32,16 @@ tinymodels is just for learning how models actually work
 
 * [SwinTransformer](https://arxiv.org/pdf/2103.14030.pdf) - 2021 
 
-* [ConvNeXt](https://arxiv.org/pdf/2201.03545v2.pdf) - 2022
+* [ConvNeXt](https://arxiv.org/pdf/2201.03545v2.pdf) - 2022     &#x2714;
 
 # Running tinymodels
 
-On default app will run on port 3000
+On default app will run on port 3000.
+First run will take few minutes to download pretrained weights.
 
 ```bash
 
-git clone https://github.com/filnow/tinymodels
+git clone https://github.com/filnow/tinymodels.git
 cd tinymodels
 pip install -r requirements.txt
 python3 app.py
