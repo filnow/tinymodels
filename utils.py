@@ -7,9 +7,14 @@ import torch.nn as nn
 from torch.hub import load_state_dict_from_url
 from typing import Tuple, Union
 from models import *
+import io
 
+def image_resize(file) -> Image.Image:
+    img = Image.open(file)
+    img.thumbnail((600, 600), Image.ANTIALIAS)
+    return img
 
-#copy from pytorch DenseNet to match dict
+#NOTE: copy from pytorch DenseNet to match dict
 def _load_state_dict(model: nn.Module, data_link: str) -> None:
 
     pattern = re.compile(

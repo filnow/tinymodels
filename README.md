@@ -30,8 +30,6 @@ tinymodels is just for learning how models actually work
 
 * [ViT](https://arxiv.org/pdf/2010.11929.pdf) - 2021    &#x2714;
 
-* [SwinTransformer](https://arxiv.org/pdf/2103.14030.pdf) - 2021 
-
 * [ConvNeXt](https://arxiv.org/pdf/2201.03545v2.pdf) - 2022     &#x2714;
 
 # Running tinymodels
